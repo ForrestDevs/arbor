@@ -1,5 +1,6 @@
 import type { Config } from "tailwindcss";
-
+import animatePlugin from "tailwindcss-animate";
+import typographyPlugin from "@tailwindcss/typography";
 export default {
     darkMode: ["class"],
     content: [
@@ -55,8 +56,11 @@ export default {
   			lg: 'var(--radius)',
   			md: 'calc(var(--radius) - 2px)',
   			sm: 'calc(var(--radius) - 4px)'
-  		}
-  	}
+      },
+      fontFamily: {
+        mono: ['var(--font-jetbrains-mono)', 'JetBrains Mono', 'monospace'],
+      },
+    },
   },
-  plugins: [],
+  plugins: [animatePlugin, typographyPlugin],
 } satisfies Config;

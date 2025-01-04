@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Bell, ExternalLink } from "lucide-react";
+import { ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { SeedsBackground } from "./ui/seeds-background";

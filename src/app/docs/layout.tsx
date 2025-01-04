@@ -1,5 +1,6 @@
 import Header from '@/components/header'
 import DocsSidebar from '@/components/docs-sidebar'
+import { TableOfContents } from '@/components/table-of-contents'
 
 export default function DocsLayout({
   children,
@@ -11,11 +12,16 @@ export default function DocsLayout({
       <Header />
       <div className="flex-1 flex">
         <DocsSidebar />
-        <main className="flex-1 px-4 py-8 ml-[250px]">
-          <div className="container mx-auto">
-            {children}
+        <div className="flex-1 flex ml-[250px]">
+          <main className="flex-1 px-8 py-8 max-w-3xl">
+            <div className="prose prose-green max-w-none">
+              {children}
+            </div>
+          </main>
+          <div className="hidden xl:block w-[250px] flex-shrink-0">
+            <TableOfContents />
           </div>
-        </main>
+        </div>
       </div>
     </div>
   )
