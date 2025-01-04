@@ -35,7 +35,7 @@ export default function Header() {
             </li>
             <li>
               <a
-                href="https://eliza.network"
+                href="https://elizaos.github.io/eliza/docs/advanced/eliza-in-tee/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center text-primary hover:text-primary/80 transition-colors"
