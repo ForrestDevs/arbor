@@ -2,12 +2,12 @@ import Link from "next/link";
 import { ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { SeedsBackground } from "./ui/seeds-background";
+// import { SeedsBackground } from "./ui/seeds-background";
 
 export default function Header() {
   return (
     <header className="relative flex items-center justify-between p-4 bg-background/80 backdrop-blur-sm border-b border-border">
-      <SeedsBackground />
+      {/* <SeedsBackground /> */}
       <div className="flex items-center space-x-6">
         <div>
           <h1 className="text-2xl font-bold text-primary">Seed</h1>
