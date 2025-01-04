@@ -27,15 +27,7 @@ export default function Header() {
             </li>
             <li>
               <Link
-                href="/about"
-                className="text-primary hover:text-primary/80 transition-colors"
-              >
-                About
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="/docs/seed-overview"
+                href="/docs"
                 className="text-primary hover:text-primary/80 transition-colors"
               >
                 Documentation
@@ -64,9 +56,6 @@ export default function Header() {
             BREEDING <span className="ml-1 text-xs">6</span>
           </Badge>
         </div>
-        <Button variant="ghost" size="icon">
-          <Bell className="h-5 w-5 text-primary" />
-        </Button>
         <Button
           variant="outline"
           className="text-primary border-primary hover:bg-primary hover:text-primary-foreground"
