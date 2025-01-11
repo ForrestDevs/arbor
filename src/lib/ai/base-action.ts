@@ -1,6 +1,5 @@
 import { z } from "zod";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type BaseActionSchemaAny = z.ZodObject<any, any, any, any>;
 
 export type BaseActionResult<TBody> = {

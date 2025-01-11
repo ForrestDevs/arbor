@@ -2,7 +2,6 @@ import { z } from "zod";
 import { Wallet } from "@coinbase/coinbase-sdk";
 import { BaseAction, BaseActionResult, BaseActionSchemaAny } from "../../base-action";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type CdpActionSchemaAny = BaseActionSchemaAny;
 export type CdpActionResult<TBody> = BaseActionResult<TBody>;
 
