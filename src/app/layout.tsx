@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import { JetBrains_Mono } from 'next/font/google';
+import { JetBrains_Mono, Azeret_Mono, VT323} from "next/font/google";
 import "./globals.css";
+import { cn } from "@/lib/utils";
+import Providers from "@/lib/providers";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -14,13 +16,24 @@ const geistMono = Geist_Mono({
 });
 
 const jetbrainsMono = JetBrains_Mono({
-  subsets: ['latin'],
-  variable: '--font-jetbrains-mono',
+  subsets: ["latin"],
+  variable: "--font-jetbrains-mono",
 });
 
+const azeretMono = Azeret_Mono({
+  subsets: ["latin"],
+  variable: "--font-azeret-mono",
+});
+
+const vt323 = VT323({
+  subsets: ["latin"],
+  variable: "--font-vt323",
+  weight: "400",
+}); 
+
 export const metadata: Metadata = {
-  title: "Seed",
-  description: "Seed AI Framework",
+  title: "Arbor AI",
+  description: "Arbor AI Framework",
 };
 
 export default function RootLayout({
@@ -29,8 +42,19 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${geistSans.variable} ${geistMono.variable} ${jetbrainsMono.variable}`}>
-      <body>{children}</body>
+    <html lang="en" suppressHydrationWarning>
+      <body
+        className={cn(
+          "antialiased",
+          geistSans.variable,
+          geistMono.variable,
+          jetbrainsMono.variable,
+          azeretMono.variable,
+          vt323.variable
+        )}
+      >
+        <Providers>{children}</Providers>
+      </body>
     </html>
   );
 }

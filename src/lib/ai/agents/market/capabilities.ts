@@ -1,0 +1,2 @@
+export const MARKET_AGENT_CAPABILITIES =
+`The Market Agent can get the current wallet address, get all of the wallet's balances, get the balance of a specific token, and transfer tokens to another wallet.`;
