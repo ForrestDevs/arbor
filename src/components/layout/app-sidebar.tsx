@@ -1,13 +1,7 @@
 "use client";
 
 import * as React from "react";
-import {
-  LifeBuoy,
-  Network,
-  Send,
-  Settings2,
-  SquareTerminal,
-} from "lucide-react";
+import { Network, SquareTerminal } from "lucide-react";
 import Link from "next/link";
 import { NavMain } from "@/components/layout/nav-main";
 import { NavDocs } from "@/components/layout/nav-docs";
@@ -23,13 +17,17 @@ import {
 import Image from "next/image";
 import { ThemeToggle } from "../ui/theme-toggle";
 import AuthButton from "./wallet-button";
+import { FaGithub, FaXTwitter } from "react-icons/fa6";
+import { NavSecondary } from "@/components/layout/nav-secondary";
+
+interface NavItem {
+  title: string;
+  href: string;
+  icon: React.ComponentType<{ className?: string }>;
+  target?: string;
+}
 
 const data = {
-  user: {
-    name: "shadcn",
-    email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
-  },
   navMain: [
     {
       title: "Interface",
@@ -41,24 +39,21 @@ const data = {
       url: "/dashboard/console",
       icon: SquareTerminal,
     },
-    {
-      title: "Settings",
-      url: "/dashboard/settings",
-      icon: Settings2,
-    },
   ],
   navSecondary: [
     {
-      title: "Support",
-      url: "#",
-      icon: LifeBuoy,
+      title: "Follow on X",
+      href: "https://x.com/arbor_agent",
+      icon: FaXTwitter as React.ComponentType<{ className?: string }>,
+      target: "_blank",
     },
     {
-      title: "Feedback",
-      url: "#",
-      icon: Send,
+      title: "Source Code",
+      href: "https://github.com/arbor-agent/arbor",
+      icon: FaGithub as React.ComponentType<{ className?: string }>,
+      target: "_blank",
     },
-  ],
+  ] as NavItem[],
   docs: [
     {
       title: "Getting Started",
@@ -137,8 +132,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarContent>
         {/* <NavUser user={data.user} /> */}
         <NavMain items={data.navMain} />
+        <NavSecondary items={data.navSecondary} />
         <NavDocs docs={data.docs} />
-        {/* <NavSecondary items={data.navSecondary} className="mt-auto" /> */}
       </SidebarContent>
       <SidebarFooter>
         <ThemeToggle />

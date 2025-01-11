@@ -1,6 +1,6 @@
 "use client";
 
-import { BookOpen, ChevronRight } from "lucide-react";
+import { BookOpen, Bot, ChevronRight, LockKeyholeIcon } from "lucide-react";
 import * as React from "react";
 import Link from "next/link";
 import {
@@ -34,13 +34,33 @@ export function NavDocs({ docs }: { docs: DocSection[] }) {
   return (
     <SidebarGroup>
       <SidebarGroupLabel>Docs</SidebarGroupLabel>
+      <SidebarMenu className="mb-2">
+        <SidebarMenuItem>
+          <SidebarMenuButton asChild tooltip="About Arbor">
+            <Link href="/dashboard/docs/about">
+              <Bot />
+              <span>About Arbor</span>
+            </Link>
+          </SidebarMenuButton>
+        </SidebarMenuItem>
+
+        <SidebarMenuItem>
+          <SidebarMenuButton asChild tooltip="What is TEE">
+            <Link href="/dashboard/docs/tee">
+              <LockKeyholeIcon />
+              <span>What is TEE</span>
+            </Link>
+          </SidebarMenuButton>
+        </SidebarMenuItem>
+      </SidebarMenu>
+
       <SidebarMenu>
         <Collapsible key={"docs"} asChild>
           <SidebarMenuItem>
             <SidebarMenuButton asChild tooltip="Docs">
               <Link href="/dashboard/docs">
                 <BookOpen />
-                <span>Docs</span>
+                <span>More Docs</span>
               </Link>
             </SidebarMenuButton>
             <>
@@ -55,9 +75,7 @@ export function NavDocs({ docs }: { docs: DocSection[] }) {
                   {docs.map((section) => (
                     <Collapsible asChild key={section.title}>
                       <SidebarMenuItem>
-                        <SidebarMenuButton>
-                          {section.title}
-                        </SidebarMenuButton>
+                        <SidebarMenuButton>{section.title}</SidebarMenuButton>
                         <>
                           <CollapsibleTrigger asChild>
                             <SidebarMenuAction className="data-[state=open]:rotate-90">
