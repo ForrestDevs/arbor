@@ -7,6 +7,13 @@ import { Input } from "@/components/ui/input";
 import ReactFlow, { Background, Node, Edge, Controls } from "reactflow";
 import "reactflow/dist/style.css";
 import CustomNode from "@/components/custom-node";
+import { ChatInterface } from "./chat";
+import {
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
+} from "@/components/ui/resizable";
+import { useChat } from "./_components/context";
 
 const nodeTypes = {
   custom: CustomNode,
@@ -189,169 +196,62 @@ const initialEdges: Edge[] = [
 const agentNodes = ["sage", "muse", "herald", "chia", "clover", "amaranth"];
 
 export default function InterfacePage() {
-  const [messages, setMessages] = useState<
-    { role: "user" | "assistant"; content: string }[]
-  >([]);
-  const [input, setInput] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const [activeNodeId, setActiveNodeId] = useState<string | null>(null);
-  const [activeEdgeIds, setActiveEdgeIds] = useState<string[]>([]);
-  const [selectedAgent, setSelectedAgent] = useState<{
-    id: string;
-    reason: string;
-  } | null>(null);
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!input.trim()) return;
-
-    const userMessage = { role: "user" as const, content: input };
-    setMessages((prev) => [...prev, userMessage]);
-    setInput("");
-    setIsLoading(true);
-
-    // Randomly select an agent
-    const randomAgent =
-      agentNodes[Math.floor(Math.random() * agentNodes.length)];
-    const edgeId = `e-arbor-${randomAgent}`;
-
-    // Simulate agent activation
-    setActiveNodeId("arbor");
-    setActiveEdgeIds([edgeId]);
-
-    // Set selected agent with reason
-    const selectedNode = initialNodes.find((node) => node.id === randomAgent);
-    setSelectedAgent({
-      id: randomAgent,
-      reason: `Selected based on ${selectedNode?.data.specialization} capabilities`,
-    });
-
-    // Simulate streaming response
-    const response = `Processing request using ${selectedNode?.data.title}...`;
-    let displayedResponse = "";
-
-    const assistantMessage = { role: "assistant" as const, content: "" };
-    setMessages((prev) => [...prev, assistantMessage]);
-
-    for (let i = 0; i < response.length; i++) {
-      await new Promise((resolve) => setTimeout(resolve, 50));
-      displayedResponse += response[i];
-      setMessages((prev) => [
-        ...prev.slice(0, -1),
-        { role: "assistant" as const, content: displayedResponse },
-      ]);
-    }
-
-    setIsLoading(false);
-
-    // Reset highlights and selected agent after response
-    setTimeout(() => {
-      setActiveNodeId(null);
-      setActiveEdgeIds([]);
-      setSelectedAgent(null);
-    }, 3000);
-  };
+  const { activeNodeId, activeEdgeIds, selectedAgent } = useChat();
 
   return (
-    <div className="h-[calc(100vh-4rem)] w-full flex">
-      {/* Left side - Network visualization */}
-      <div className="w-1/2 h-full border-r dark:border-gray-800">
-        <div className="flex flex-1 overflow-hidden h-full rounded-lg border">
-          <div className="flex-1 bg-muted/5">
-            <ReactFlow
-              nodes={initialNodes.map((node) => ({
-                ...node,
-                style: {
-                  opacity: activeNodeId
-                    ? node.id === activeNodeId || node.id === selectedAgent?.id
-                      ? 1
-                      : 0.4
-                    : 1,
-                },
-              }))}
-              edges={initialEdges.map((edge) => ({
-                ...edge,
-                style: {
-                  opacity: activeEdgeIds.includes(edge.id) ? 1 : 0.4,
-                },
-              }))}
-              nodeTypes={nodeTypes}
-              defaultViewport={{ x: 0, y: 0, zoom: 0.6 }}
-              minZoom={0.2}
-              maxZoom={1.5}
-              fitView
-              proOptions={{
-                hideAttribution: true,
-              }}
-            >
-              <Controls />
-              <Background color="#ddd" gap={16} />
-            </ReactFlow>
-          </div>
-        </div>
-      </div>
-
-      {/* Right side - Chat interface */}
-      <div className="w-1/2 h-full flex flex-col p-6">
-        <div className="flex items-center gap-2 mb-6">
-          <MessageSquare className="w-6 h-6" />
-          <h1 className="text-2xl font-bold">AI Chat Interface</h1>
-        </div>
-
-        {selectedAgent && (
-          <div className="mb-4 p-4 bg-muted rounded-lg">
-            <p className="font-semibold">
-              Active Agent:{" "}
-              {
-                initialNodes.find((node) => node.id === selectedAgent.id)?.data
-                  .title
-              }
-            </p>
-            <p className="text-sm text-muted-foreground">
-              {selectedAgent.reason}
-            </p>
-          </div>
-        )}
-
-        <div className="flex-1 overflow-y-auto space-y-4 mb-4">
-          {messages.map((message, index) => (
-            <div
-              key={index}
-              className={`flex ${
-                message.role === "user" ? "justify-end" : "justify-start"
-              }`}
-            >
-              <div
-                className={`max-w-[80%] rounded-lg p-4 ${
-                  message.role === "user"
-                    ? "bg-primary text-primary-foreground"
-                    : "bg-muted"
-                }`}
+    <ResizablePanelGroup
+      direction="horizontal"
+      className="rounded-lg border w-full"
+    >
+      <ResizablePanel defaultSize={25} maxSize={50}>
+        <div className="h-full border-r dark:border-gray-800">
+          <div className="flex flex-1 overflow-hidden h-full rounded-lg border">
+            <div className="flex-1 bg-muted/5">
+              <ReactFlow
+                nodes={initialNodes.map((node) => ({
+                  ...node,
+                  style: {
+                    opacity: activeNodeId
+                      ? node.id === activeNodeId ||
+                        node.id === selectedAgent?.id
+                        ? 1
+                        : 0.4
+                      : 1,
+                  },
+                }))}
+                edges={initialEdges.map((edge) => ({
+                  ...edge,
+                  style: {
+                    strokeWidth: 4,
+                    stroke: activeEdgeIds.includes(edge.id) ? "#720394" : "#0497cc",
+                    opacity: activeEdgeIds.includes(edge.id) ? 1 : 0.3,
+                  },
+                }))}
+                nodeTypes={nodeTypes}
+                defaultViewport={{ x: 0, y: 0, zoom: 0.6 }}
+                minZoom={0.2}
+                maxZoom={1.5}
+                fitView
+                proOptions={{
+                  hideAttribution: true,
+                }}
               >
-                {message.content}
-              </div>
+                <Controls />
+                <Background color="#ddd" gap={16} />
+              </ReactFlow>
             </div>
-          ))}
-          {isLoading && (
-            <div className="flex justify-start">
-              <div className="bg-muted rounded-lg p-4">Thinking...</div>
-            </div>
-          )}
+          </div>
         </div>
-
-        <form onSubmit={handleSubmit} className="flex gap-2">
-          <Input
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            placeholder="Type your message..."
-            disabled={isLoading}
-            className="flex-1"
+      </ResizablePanel>
+      <ResizableHandle withHandle />
+      <ResizablePanel defaultSize={75}>
+        <div className="h-full">
+          <ChatInterface
+            selectedAgent={selectedAgent}
+            initialNodes={initialNodes}
           />
-          <Button type="submit" disabled={isLoading}>
-            <Send className="w-4 h-4" />
-          </Button>
-        </form>
-      </div>
-    </div>
+        </div>
+      </ResizablePanel>
+    </ResizablePanelGroup>
   );
 }
