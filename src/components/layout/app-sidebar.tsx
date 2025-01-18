@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Network, SquareTerminal } from "lucide-react";
+import { BotIcon, Network, SquareTerminal } from "lucide-react";
 import Link from "next/link";
 import { NavMain } from "@/components/layout/nav-main";
 import { NavDocs } from "@/components/layout/nav-docs";
@@ -38,6 +38,11 @@ const data = {
       title: "Console",
       url: "/dashboard/console",
       icon: SquareTerminal,
+    },
+    {
+      title: "Agents",
+      url: "/dashboard/agents",
+      icon: BotIcon,
     },
   ],
   navSecondary: [
