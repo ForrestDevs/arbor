@@ -10,8 +10,6 @@ const privy = new PrivyClient(
 );
 
 export const GET = async (req: NextRequest) => {
-  console.log("GET /api/chats");
-
   try {
     // Get the authorization header
     const authHeader = req.headers.get("authorization");
@@ -30,8 +28,6 @@ export const GET = async (req: NextRequest) => {
     if (!userId) {
       return NextResponse.json({ error: "Invalid token" }, { status: 401 });
     }
-
-    console.log("userId", userId);
 
     // Get the user's chats
     const chats = await findChatsByUser(userId);

@@ -13,7 +13,7 @@ import {
   ResizablePanel,
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
-import { useChat } from "./_components/context";
+import { useAi } from "./_components/context";
 
 const nodeTypes = {
   custom: CustomNode,
@@ -196,7 +196,7 @@ const initialEdges: Edge[] = [
 const agentNodes = ["sage", "muse", "herald", "chia", "clover", "amaranth"];
 
 export default function InterfacePage() {
-  const { activeNodeId, activeEdgeIds, selectedAgent } = useChat();
+  const { activeNodeId, activeEdgeIds, selectedAgent } = useAi();
 
   return (
     <ResizablePanelGroup
@@ -223,7 +223,9 @@ export default function InterfacePage() {
                   ...edge,
                   style: {
                     strokeWidth: 4,
-                    stroke: activeEdgeIds.includes(edge.id) ? "#720394" : "#0497cc",
+                    stroke: activeEdgeIds.includes(edge.id)
+                      ? "#720394"
+                      : "#0497cc",
                     opacity: activeEdgeIds.includes(edge.id) ? 1 : 0.3,
                   },
                 }))}
@@ -246,10 +248,7 @@ export default function InterfacePage() {
       <ResizableHandle withHandle />
       <ResizablePanel defaultSize={75}>
         <div className="h-full">
-          <ChatInterface
-            selectedAgent={selectedAgent}
-            initialNodes={initialNodes}
-          />
+          <ChatInterface />
         </div>
       </ResizablePanel>
     </ResizablePanelGroup>

@@ -76,9 +76,7 @@ export default function AgentsPage() {
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
         {selectedAgent && (
           <DialogContent className="sm:max-w-[425px]">
-            <DialogHeader>
-              <DialogTitle>{selectedAgent.name}</DialogTitle>
-            </DialogHeader>
+            <DialogTitle>{selectedAgent.name}</DialogTitle>
             <div className="mt-4">
               <p className="text-muted-foreground mb-4">
                 {selectedAgent.description}

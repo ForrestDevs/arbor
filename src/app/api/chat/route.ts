@@ -24,6 +24,8 @@ export async function POST(req: Request) {
 
   const chosenAgent = await chooseAgent(messages);
 
+  console.log("chosenAgent", chosenAgent);
+
   let streamTextResult: StreamTextResult<
     Record<string, CoreTool<any, any>>,
     any

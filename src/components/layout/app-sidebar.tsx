@@ -30,8 +30,13 @@ interface NavItem {
 const data = {
   navMain: [
     {
-      title: "Interface",
-      url: "/dashboard/interface",
+      title: "Copilot",
+      url: "/dashboard/copilot",
+      icon: BotIcon,
+    },
+    {
+      title: "Chat",
+      url: "/dashboard/chat",
       icon: Network,
     },
     {

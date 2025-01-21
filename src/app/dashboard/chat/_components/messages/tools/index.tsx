@@ -51,6 +51,7 @@ import React from "react";
 // } from "@/ai/action-names";
 
 import type { ToolInvocation as ToolInvocationType } from "ai";
+import GetTrendingTokens from "./get-trending-tokens";
 
 interface Props {
   tool: ToolInvocationType;
@@ -61,7 +62,11 @@ const ToolInvocation: React.FC<Props> = ({ tool, prevToolAgent }) => {
   const toolParts = tool.toolName.split("-");
   const toolName = toolParts.slice(1).join("-");
 
+  console.log(tool);
+
   switch (toolName) {
+    case "getTrendingTokens":
+      return <GetTrendingTokens tool={tool} prevToolAgent={prevToolAgent} />;
     // case SOLANA_BALANCE_NAME:
     //   return <Balance tool={tool} prevToolAgent={prevToolAgent} />;
     // case SOLANA_GET_WALLET_ADDRESS_NAME:
@@ -104,12 +109,6 @@ const ToolInvocation: React.FC<Props> = ({ tool, prevToolAgent }) => {
     //   return <GetLpTokens tool={tool} prevToolAgent={prevToolAgent} />;
     // case SOLANA_WITHDRAW_LIQUIDITY_NAME:
     //   return <WithdrawLiquidity tool={tool} prevToolAgent={prevToolAgent} />;
-    default:
-      return (
-        <pre className="whitespace-pre-wrap">
-          {JSON.stringify(tool, null, 2)}
-        </pre>
-      );
   }
 };
 

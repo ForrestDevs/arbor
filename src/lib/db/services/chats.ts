@@ -42,8 +42,6 @@ export const getChat = async (
   id: Chat["id"],
   userId: Chat["userId"]
 ): Promise<Chat | null> => {
-  console.log("getChat", id, userId);
-
   try {
     const chat = await prisma.chat.findUnique({
       where: { id, userId },
@@ -76,8 +74,6 @@ export const getChat = async (
 export const findChatsByUser = async (
   userId: Chat["userId"]
 ): Promise<Chat[]> => {
-  console.log("findChatsByUser", userId);
-
   try {
     const chats = await prisma.chat.findMany({
       where: {
@@ -87,8 +83,7 @@ export const findChatsByUser = async (
         createdAt: "desc",
       },
     });
-    console.log("chats", chats);
-
+  
     if (!chats) {
       return [];
     }

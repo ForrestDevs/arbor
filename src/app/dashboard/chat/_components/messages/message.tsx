@@ -36,6 +36,8 @@ const Message: React.FC<Props> = ({
   const nextMessageSameRole = nextMessage?.role === message.role;
   const previousMessageSameRole = previousMessage?.role === message.role;
 
+  console.log("message:", message);
+
   return (
     <div
       className={cn(
@@ -84,7 +86,7 @@ const Message: React.FC<Props> = ({
               : "text-brand-600 dark:text-brand-600"
           )}
         >
-          {message.role === "user" ? "You" : "The Hive"}
+          {message.role === "user" ? "You" : "Arbor"}
         </p>
       </div>
       <div className="pt-2 w-full max-w-full md:flex-1 md:w-0 overflow-hidden flex flex-col gap-2">

@@ -27,6 +27,10 @@ import ObjectId from "bson-objectid";
 // } from "@/ai/action-names";
 
 import { useUserChats } from "@/lib/hooks/queries/chats";
+import { tools } from "@/lib/agents/tools/config";
+import useWebRTCAudioSession from "@/lib/hooks/use-web-rtc";
+import { useToolsFunctions } from "@/lib/hooks/use-tools";
+import { Conversation } from "@/lib/types/conversation";
 
 export enum ColorMode {
   LIGHT = "light",
@@ -54,10 +58,18 @@ interface ChatContextType {
   inputDisabledMessage: string;
   setActiveNodeId: (nodeId: string | null) => void;
   setActiveEdgeIds: (edgeIds: string[]) => void;
-  setSelectedAgent: (agent: { id: string; reason: string; } | null) => void;
+  setSelectedAgent: (agent: { id: string; reason: string } | null) => void;
   activeNodeId: string | null;
   activeEdgeIds: string[];
-  selectedAgent: { id: string; reason: string; } | null;
+  selectedAgent: { id: string; reason: string } | null;
+  status: string;
+  isSessionActive: boolean;
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
+  registerFunction: (name: string, fn: Function) => void;
+  handleStartStopClick: () => void;
+  msgs: any[];
+  conversation: Conversation[];
+  currentVolume: number;
 }
 
 const ChatContext = createContext<ChatContextType>({
@@ -79,6 +91,13 @@ const ChatContext = createContext<ChatContextType>({
   activeNodeId: null,
   activeEdgeIds: [],
   selectedAgent: null,
+  status: "",
+  isSessionActive: false,
+  registerFunction: () => {},
+  handleStartStopClick: () => {},
+  msgs: [],
+  conversation: [],
+  currentVolume: 0,
 });
 
 interface ChatProviderProps {
@@ -99,6 +118,37 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
   } | null>(null);
 
   const { mutate } = useUserChats();
+
+  const [voice, setVoice] = useState("verse");
+
+  const {
+    status,
+    isSessionActive,
+    registerFunction,
+    handleStartStopClick,
+    msgs,
+    conversation,
+    currentVolume,
+  } = useWebRTCAudioSession(voice, tools);
+
+  // Get all tools functions
+  const toolsFunctions = useToolsFunctions();
+
+  useEffect(() => {
+    // Register all functions by iterating over the object
+    Object.entries(toolsFunctions).forEach(([name, func]) => {
+      const functionNames: Record<string, string> = {
+        timeFunction: "getCurrentTime",
+        backgroundFunction: "changeBackgroundColor",
+        partyFunction: "partyMode",
+        launchWebsite: "launchWebsite",
+        copyToClipboard: "copyToClipboard",
+        scrapeWebsite: "scrapeWebsite",
+      };
+
+      registerFunction(functionNames[name], func);
+    });
+  }, [registerFunction, toolsFunctions]);
 
   const setChat = async (chatId: string) => {
     setChatId(chatId);
@@ -175,7 +225,8 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
 
     // Randomly select an agent (temporary until all agents are implemented)
     const agentNodes = ["sage", "muse", "herald", "chia", "clover", "amaranth"];
-    const randomAgent = agentNodes[Math.floor(Math.random() * agentNodes.length)];
+    const randomAgent =
+      agentNodes[Math.floor(Math.random() * agentNodes.length)];
     const edgeId = `e-arbor-${randomAgent}`;
 
     // Set visualization states
@@ -265,6 +316,13 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
         activeNodeId,
         activeEdgeIds,
         selectedAgent,
+        status,
+        isSessionActive,
+        registerFunction,
+        handleStartStopClick,
+        msgs,
+        conversation,
+        currentVolume,
       }}
     >
       {children}
@@ -272,4 +330,4 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
   );
 };
 
-export const useChat = () => useContext(ChatContext);
+export const useAi = () => useContext(ChatContext);

@@ -8,7 +8,7 @@ import { DashboardBreadcrumbs } from "@/components/layout/dashboard-breadcrumbs"
 import { Separator } from "@/components/ui/separator";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { ChatHistory } from "@/components/layout/chat-history";
-import { ChatProvider } from "./interface/_components/context";
+import { AiProvider } from "@/components/ai/provider";
 
 export default function DashboardLayout({
   children,
@@ -16,7 +16,7 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   return (
-    <ChatProvider>
+    <AiProvider>
       <SidebarProvider>
         <AppSidebar />
         <SidebarInset>
@@ -38,6 +38,6 @@ export default function DashboardLayout({
           </div>
         </SidebarInset>
       </SidebarProvider>
-    </ChatProvider>
+    </AiProvider>
   );
 }

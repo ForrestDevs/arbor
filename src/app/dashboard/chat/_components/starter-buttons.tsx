@@ -2,7 +2,7 @@
 
 import React from "react";
 import { Button } from "@/components/ui/button";
-import { useChat } from "./context";
+import { useAi } from "./context";
 import { cn } from "@/lib/utils";
 import { IconName } from "@/lib/types";
 import { Icon } from "@/components/ui/icon";
@@ -22,7 +22,7 @@ const StarterButton: React.FC<Props> = ({
   prompt,
   className,
 }) => {
-  const { sendMessage } = useChat();
+  const { sendMessage } = useAi();
 
   return (
     <Button

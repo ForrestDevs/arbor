@@ -6,9 +6,9 @@ import Message from "./message";
 
 import LoadingMessage from "./loading-message";
 
-import { useScrollAnchor } from "@/app/dashboard/interface/_hooks";
+import { useScrollAnchor } from "@/app/dashboard/chat/_hooks";
 
-import { useChat } from "@/app/dashboard/interface/_components/context";
+import { useAi } from "@/app/dashboard/chat/_components/context";
 
 import type { Message as MessageType } from "ai";
 
@@ -18,7 +18,7 @@ interface Props {
 }
 
 const Messages: React.FC<Props> = ({ messages, messageClassName }) => {
-  const { isResponseLoading } = useChat();
+  const { isResponseLoading } = useAi();
 
   const { scrollRef, messagesRef, scrollToBottom } = useScrollAnchor();
 

@@ -13,7 +13,7 @@ import { Skeleton } from "../ui/skeleton";
 import { Chat } from "@prisma/client";
 
 import { useUserChats } from "@/lib/hooks/queries/chats";
-import { useChat } from "@/app/dashboard/interface/_components/context";
+import { useAi } from "@/app/dashboard/chat/_components/context";
 import { cn } from "@/lib/utils";
 import { usePrivy } from "@privy-io/react-auth";
 
@@ -25,9 +25,9 @@ export function ChatHistory() {
 
   const { chats, isLoading } = useUserChats();
 
-  const { setChat, chatId, resetChat } = useChat();
+  const { setChat, chatId, resetChat } = useAi();
 
-  if (!pathname.includes("/dashboard/interface")) {
+  if (!pathname.includes("/dashboard/chat")) {
     return null;
   }
 
