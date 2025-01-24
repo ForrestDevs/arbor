@@ -35,31 +35,26 @@ const data = {
       icon: BotIcon,
     },
     {
-      title: "Chat",
-      url: "/dashboard/chat",
-      icon: Network,
-    },
-    {
       title: "Console",
       url: "/dashboard/console",
       icon: SquareTerminal,
     },
     {
-      title: "Agents",
-      url: "/dashboard/agents",
-      icon: BotIcon,
+      title: "Abilities",
+      url: "/dashboard/abilities",
+      icon: Network,
     },
   ],
   navSecondary: [
     {
       title: "Follow on X",
-      href: "https://x.com/arbor_agent",
+      href: "https://x.com/Arborvitai",
       icon: FaXTwitter as React.ComponentType<{ className?: string }>,
       target: "_blank",
     },
     {
       title: "Source Code",
-      href: "https://github.com/arbor-agent/arbor",
+      href: "https://github.com/ForrestDevs/arbor",
       icon: FaGithub as React.ComponentType<{ className?: string }>,
       target: "_blank",
     },
@@ -122,7 +117,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground gap-2">
                   <Image
                     className="rounded-lg"
-                    src="/arbor.png"
+                    src="/arbor2.png"
                     alt="Arbor"
                     width={32}
                     height={32}

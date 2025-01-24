@@ -86,64 +86,80 @@ export default function useWebRTCAudioSession(
     const sessionUpdate = {
       type: "session.update",
       session: {
-        modalities: ["text", "audio"],
+        model: "gpt-4o-mini-realtime-preview-2024-12-17",
+        voice: "verse",
+        modalities: ["audio", "text"],
+        instructions: `
+          You are a professional assistant for on and off chain user related tasks. 
+          You speak in a friendly confident tone, and laugh when appropriate.
+          
+          IMPORTANT: When requested for information or actions out of your knowledge or control, MAKE sure to use the available tools when relevant.
+          The tools available to you will provide you with the information you need to answer the user's question or complete the user's request.
+          
+          After executing a tool, you will need to respond (create a subsequent conversation item) to the user sharing the function result or error. 
+          If you do not respond with additional message with function result, user will not know you successfully executed the tool.
+
+          Make sure to throughly check the tools before responding to the user, and if you do not know the answer, use the tools to get the information you need.
+          If there isnt the right tool, you can say that you do not know the answer, and ask the user to rephrase their question.
+
+          Speak and respond only in English. It is crucial that you maintain your responses in English. 
+          If the user speaks in other languages, you should still respond in English.
+        `,
         tools: tools || [],
-        input_audio_transcription: {
-          model: "whisper-1",
-        },
+        tool_choice: "auto", // if this isnt reliable, explore making a tool choice function
       },
     };
     dataChannel.send(JSON.stringify(sessionUpdate));
   }
 
-  /**
-   * Return an ephemeral user ID, creating a new ephemeral message in conversation if needed.
-   */
-  function getOrCreateEphemeralUserId(): string {
-    let ephemeralId = ephemeralUserMessageIdRef.current;
-    if (!ephemeralId) {
-      // Use uuidv4 for a robust unique ID
-      ephemeralId = uuidv4();
-      ephemeralUserMessageIdRef.current = ephemeralId;
+  // /**
+  //  * Return an ephemeral user ID, creating a new ephemeral message in conversation if needed.
+  //  */
+  // function getOrCreateEphemeralUserId(): string {
+  //   let ephemeralId = ephemeralUserMessageIdRef.current;
+  //   if (!ephemeralId) {
+  //     // Use uuidv4 for a robust unique ID
+  //     ephemeralId = uuidv4();
+  //     ephemeralUserMessageIdRef.current = ephemeralId;
 
-      const newMessage: Conversation = {
-        id: ephemeralId,
-        role: "user",
-        text: "",
-        timestamp: new Date().toISOString(),
-        isFinal: false,
-        status: "speaking",
-      };
+  //     const newMessage: Conversation = {
+  //       id: ephemeralId,
+  //       role: "user",
+  //       text: "",
+  //       timestamp: new Date().toISOString(),
+  //       isFinal: false,
+  //       status: "speaking",
+  //     };
 
-      // Append the ephemeral item to conversation
-      setConversation((prev) => [...prev, newMessage]);
-    }
-    return ephemeralId;
-  }
+  //     // Append the ephemeral item to conversation
+  //     setConversation((prev) => [...prev, newMessage]);
+  //   }
+  //   return ephemeralId;
+  // }
 
-  /**
-   * Update the ephemeral user message (by ephemeralUserMessageIdRef) with partial changes.
-   */
-  function updateEphemeralUserMessage(partial: Partial<Conversation>) {
-    const ephemeralId = ephemeralUserMessageIdRef.current;
-    if (!ephemeralId) return; // no ephemeral user message to update
+  // /**
+  //  * Update the ephemeral user message (by ephemeralUserMessageIdRef) with partial changes.
+  //  */
+  // function updateEphemeralUserMessage(partial: Partial<Conversation>) {
+  //   const ephemeralId = ephemeralUserMessageIdRef.current;
+  //   if (!ephemeralId) return; // no ephemeral user message to update
 
-    setConversation((prev) =>
-      prev.map((msg) => {
-        if (msg.id === ephemeralId) {
-          return { ...msg, ...partial };
-        }
-        return msg;
-      })
-    );
-  }
+  //   setConversation((prev) =>
+  //     prev.map((msg) => {
+  //       if (msg.id === ephemeralId) {
+  //         return { ...msg, ...partial };
+  //       }
+  //       return msg;
+  //     })
+  //   );
+  // }
 
-  /**
-   * Clear ephemeral user message ID so the next user speech starts fresh.
-   */
-  function clearEphemeralUserMessage() {
-    ephemeralUserMessageIdRef.current = null;
-  }
+  // /**
+  //  * Clear ephemeral user message ID so the next user speech starts fresh.
+  //  */
+  // function clearEphemeralUserMessage() {
+  //   ephemeralUserMessageIdRef.current = null;
+  // }
 
   /**
    * Main data channel message handler: interprets events from the server.
@@ -154,62 +170,62 @@ export default function useWebRTCAudioSession(
       // console.log("Incoming dataChannel message:", msg);
 
       switch (msg.type) {
-        /**
-         * User speech started
-         */
-        case "input_audio_buffer.speech_started": {
-          getOrCreateEphemeralUserId();
-          updateEphemeralUserMessage({ status: "speaking" });
-          break;
-        }
+        // /**
+        //  * User speech started
+        //  */
+        // case "input_audio_buffer.speech_started": {
+        //   getOrCreateEphemeralUserId();
+        //   updateEphemeralUserMessage({ status: "speaking" });
+        //   break;
+        // }
 
-        /**
-         * User speech stopped
-         */
-        case "input_audio_buffer.speech_stopped": {
-          // optional: you could set "stopped" or just keep "speaking"
-          updateEphemeralUserMessage({ status: "speaking" });
-          break;
-        }
+        // /**
+        //  * User speech stopped
+        //  */
+        // case "input_audio_buffer.speech_stopped": {
+        //   // optional: you could set "stopped" or just keep "speaking"
+        //   updateEphemeralUserMessage({ status: "speaking" });
+        //   break;
+        // }
 
-        /**
-         * Audio buffer committed => "Processing speech..."
-         */
-        case "input_audio_buffer.committed": {
-          updateEphemeralUserMessage({
-            text: "Processing speech...",
-            status: "processing",
-          });
-          break;
-        }
+        // /**
+        //  * Audio buffer committed => "Processing speech..."
+        //  */
+        // case "input_audio_buffer.committed": {
+        //   updateEphemeralUserMessage({
+        //     text: "Processing speech...",
+        //     status: "processing",
+        //   });
+        //   break;
+        // }
 
-        /**
-         * Partial user transcription
-         */
-        case "conversation.item.input_audio_transcription": {
-          const partialText =
-            msg.transcript ?? msg.text ?? "User is speaking...";
-          updateEphemeralUserMessage({
-            text: partialText,
-            status: "speaking",
-            isFinal: false,
-          });
-          break;
-        }
+        // /**
+        //  * Partial user transcription
+        //  */
+        // case "conversation.item.input_audio_transcription": {
+        //   const partialText =
+        //     msg.transcript ?? msg.text ?? "User is speaking...";
+        //   updateEphemeralUserMessage({
+        //     text: partialText,
+        //     status: "speaking",
+        //     isFinal: false,
+        //   });
+        //   break;
+        // }
 
-        /**
-         * Final user transcription
-         */
-        case "conversation.item.input_audio_transcription.completed": {
-          // console.log("Final user transcription:", msg.transcript);
-          updateEphemeralUserMessage({
-            text: msg.transcript || "",
-            isFinal: true,
-            status: "final",
-          });
-          clearEphemeralUserMessage();
-          break;
-        }
+        // /**
+        //  * Final user transcription
+        //  */
+        // case "conversation.item.input_audio_transcription.completed": {
+        //   // console.log("Final user transcription:", msg.transcript);
+        //   updateEphemeralUserMessage({
+        //     text: msg.transcript || "",
+        //     isFinal: true,
+        //     status: "final",
+        //   });
+        //   clearEphemeralUserMessage();
+        //   break;
+        // }
 
         /**
          * Streaming AI transcripts (assistant partial)
@@ -397,7 +413,7 @@ export default function useWebRTCAudioSession(
         // Start volume monitoring
         volumeIntervalRef.current = window.setInterval(() => {
           setCurrentVolume(getVolume());
-        }, 100);
+        }, 50);
       };
 
       // Data channel for transcripts
@@ -408,6 +424,7 @@ export default function useWebRTCAudioSession(
         // console.log("Data channel open");
         configureDataChannel(dataChannel);
       };
+
       dataChannel.onmessage = handleDataChannelMessage;
 
       // Add local (mic) track

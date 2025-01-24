@@ -32,7 +32,7 @@ export const addChat = async (chat: Chat): Promise<Chat | null> => {
 /**
  * **DATABASE SERVICE**
  *
- * Retrieves a chat by its ID and course ID.
+ * Retrieves a chat by its ID and user ID.
  *
  * @param {Chat["id"]} id - The ID of the chat to retrieve.
  * @param {Chat["userId"]} userId - The user ID associated with the chat.

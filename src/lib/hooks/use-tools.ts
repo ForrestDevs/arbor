@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import confetti from "canvas-confetti";
 import { animate as framerAnimate } from "framer-motion";
 import FirecrawlApp, { ScrapeResponse } from "@mendable/firecrawl-js";
+import { getTrendingTokens as getTrendingTokensBirdeye } from "@/lib/services/birdeye";
 
 export const useToolsFunctions = () => {
 
@@ -226,6 +227,30 @@ export const useToolsFunctions = () => {
     }
   };
 
+  const getTokenAddress = async ({ name }: { name: string }) => {
+    const token = "fkehjfrtyfgbds3nx"
+    return {
+      success: true,
+      message: `The token address for ${name} is ${token}`,
+    };
+  };
+
+  const getPriceData = async ({ address }: { address: string }) => {
+    const price = 353.53;
+    return {
+      success: true,
+      message: `The price of ${address} is ${price}`,
+    };
+  };
+
+  const getTrendingTokens = async ({ limit }: { limit: number }) => {
+    const tokens = await getTrendingTokensBirdeye(limit);
+    return {
+      success: true,
+      message: `The trending tokens are ${tokens}`,
+    };
+  };
+
   return {
     timeFunction,
     backgroundFunction,
@@ -233,5 +258,8 @@ export const useToolsFunctions = () => {
     launchWebsite,
     copyToClipboard,
     scrapeWebsite,
+    getTokenAddress,
+    getPriceData,
+    getTrendingTokens,
   };
 };

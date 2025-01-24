@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 import { addChat, getChat, updateChatMessages } from "@/lib/db/services/chats";
 
-import { privy } from "@/lib/auth/client";
+import { privy } from "@/lib/services/privy";
 import { generateText } from "ai";
 import { Message } from "ai";
 import { openai } from "@ai-sdk/openai";

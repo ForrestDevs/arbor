@@ -130,6 +130,7 @@ export const AiProvider: React.FC<AiProviderProps> = ({ children }) => {
         launchWebsite: "launchWebsite",
         copyToClipboard: "copyToClipboard",
         scrapeWebsite: "scrapeWebsite",
+        getTrendingTokens: "getTrendingTokens",
       };
 
       registerFunction(functionNames[name], func);

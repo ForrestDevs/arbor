@@ -15,24 +15,25 @@ export async function POST() {
         },
         body: JSON.stringify({
           model: "gpt-4o-mini-realtime-preview-2024-12-17",
-          voice: "alloy",
+          voice: "echo",
           modalities: ["audio", "text"],
-          instructions:
-            "Start conversation with the user by saying 'Hello, how can I help you today?' Use the available tools when relevant. After executing a tool, you will need to respond (create a subsequent conversation item) to the user sharing the function result or error. If you do not respond with additional message with function result, user will not know you successfully executed the tool. Speak and respond in the language of the user.",
-          tool_choice: "auto",
+          input_audio_transcription: {
+            model: "whisper-1",
+          },
+          input_audio_format: "pcm16",
+          output_audio_format: "pcm16",
+          turn_detection: null,
+          temperature: 0.9,
         }),
       }
     );
 
     if (!response.ok) {
-      throw new Error(
-        `API request failed with status ${JSON.stringify(response)}`
-      );
+      throw new Error(`API request failed`);
     }
 
     const data = await response.json();
 
-    // Return the JSON response to the client
     return NextResponse.json(data);
   } catch (error) {
     console.error("Error fetching session data:", error);

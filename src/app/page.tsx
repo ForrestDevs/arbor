@@ -17,7 +17,7 @@ export default function Home() {
       if (!user) {
         login();
       } else {
-        router.push("/dashboard/interface");
+        router.push("/dashboard/copilot");
       }
     };
 

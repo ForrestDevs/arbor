@@ -4,9 +4,12 @@ import React, { useState, useEffect } from "react";
 import ReactSiriwave, { IReactSiriwaveProps } from "react-siriwave";
 import { motion } from "framer-motion";
 import { useAi } from "@/app/dashboard/chat/_components/context";
+import { useAI } from "../context";
 
 export function Siri() {
-  const { isSessionActive, currentVolume } = useAi();
+  const { sessionStatus, currentVolume } = useAI();
+
+  const isSessionActive = sessionStatus === "CONNECTED";
 
   const [siriWaveConfig, setSiriWaveConfig] = useState<IReactSiriwaveProps>({
     theme: "ios9",
@@ -47,10 +50,10 @@ export function Siri() {
   }, [currentVolume, isSessionActive]);
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-full p-6">
+    <div className="flex flex-col items-center justify-center p-6 bg-neutral-100 dark:bg-neutral-900">
       <div className="flex items-center justify-center">
         <motion.div
-          className="rounded-4xl p-4 overflow-hidden"
+          className="p-4 overflow-hidden"
           initial={{ width: 0, opacity: 0 }}
           animate={{ width: "100%", opacity: 1 }}
           exit={{ width: 0, opacity: 0 }}
@@ -62,4 +65,4 @@ export function Siri() {
       </div>
     </div>
   );
-};
+}

@@ -1,5 +1,5 @@
-// Add interface for tools
-interface Tool {
+
+interface ITool {
   type: "function";
   name: string;
   description: string;
@@ -16,6 +16,33 @@ interface Tool {
 }
 
 const toolDefinitions = {
+  getTrendingTokens: {
+    description: "Gets the trending crypto tokens in the market",
+    parameters: {
+      limit: {
+        type: "number",
+        description: "The number of trending tokens to return",
+      },
+    },
+  },
+  getTokenAddress: {
+    description: "Gets the address of a token",
+    parameters: {
+      name: {
+        type: "string",
+        description: "The name of the token",
+      },
+    },
+  },
+  getPriceData: {
+    description: "Gets the price data of a token",
+    parameters: {
+      address: {
+        type: "string",
+        description: "The address of the token",
+      },
+    },
+  },
   getCurrentTime: {
     description: "Gets the current time in the user's timezone",
     parameters: {},
@@ -67,7 +94,7 @@ const toolDefinitions = {
   },
 } as const;
 
-const tools: Tool[] = Object.entries(toolDefinitions).map(([name, config]) => ({
+const tools: ITool[] = Object.entries(toolDefinitions).map(([name, config]) => ({
   type: "function",
   name,
   description: config.description,
@@ -77,5 +104,5 @@ const tools: Tool[] = Object.entries(toolDefinitions).map(([name, config]) => ({
   },
 }));
 
-export type { Tool };
+export type { ITool };
 export { tools };

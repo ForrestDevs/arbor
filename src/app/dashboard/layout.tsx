@@ -9,6 +9,7 @@ import { Separator } from "@/components/ui/separator";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { ChatHistory } from "@/components/layout/chat-history";
 import { AiProvider } from "@/components/ai/provider";
+import { AIProvider } from "@/components/ai/context";
 
 export default function DashboardLayout({
   children,
@@ -16,7 +17,7 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   return (
-    <AiProvider>
+    <AIProvider>
       <SidebarProvider>
         <AppSidebar />
         <SidebarInset>
@@ -38,6 +39,6 @@ export default function DashboardLayout({
           </div>
         </SidebarInset>
       </SidebarProvider>
-    </AiProvider>
+    </AIProvider>
   );
 }
