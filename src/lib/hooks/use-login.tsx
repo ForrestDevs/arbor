@@ -30,7 +30,7 @@ export const useLogin = ({
         onComplete?.(user.wallet!);
       }
       if (redirectTo) {
-        router.push("/dashboard/interface");
+        router.push("/dashboard/copilot");
       }
     },
     onError: (error) => {
