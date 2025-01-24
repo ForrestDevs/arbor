@@ -175,8 +175,6 @@ export const AIProvider: FC<PropsWithChildren> = ({ children }) => {
       (a) => a.name === selectedAgentName
     );
 
-    
-
     addTranscriptBreadcrumb(`function call: ${functionCallParams.name}`, args);
 
     if (currentAgent?.toolLogic?.[functionCallParams.name]) {
@@ -186,12 +184,8 @@ export const AIProvider: FC<PropsWithChildren> = ({ children }) => {
         `function call result: ${functionCallParams.name}`,
         fnResult
       );
-
-      addTranscriptUI(`${functionCallParams.name}`, fnResult);
-
       sendClientEvent({
         type: "conversation.item.create",
-
         item: {
           type: "function_call_output",
           call_id: functionCallParams.call_id,
@@ -199,8 +193,6 @@ export const AIProvider: FC<PropsWithChildren> = ({ children }) => {
         },
       });
       sendClientEvent({ type: "response.create" });
-    } else if (currentAgent?.uiComponents?.[functionCallParams.name]) {
-      addTranscriptUI(`${functionCallParams.name}`, args);
     } else if (functionCallParams.name === "transferAgents") {
       addTranscriptUI(`${functionCallParams.name}`, args);
 
@@ -262,7 +254,7 @@ export const AIProvider: FC<PropsWithChildren> = ({ children }) => {
           // Configure the agent
           configureAgent();
           // Get the agent to introduce itself
-          sendClientEvent({ type: "response.create" });
+          // sendClientEvent({ type: "response.create" });
         }
 
         break;
@@ -370,7 +362,6 @@ export const AIProvider: FC<PropsWithChildren> = ({ children }) => {
               outputItem.name &&
               outputItem.arguments
             ) {
-              console.log("function call detected running: ", outputItem.name);
               handleFunctionCall({
                 name: outputItem.name,
                 call_id: outputItem.call_id,

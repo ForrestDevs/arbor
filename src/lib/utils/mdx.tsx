@@ -11,7 +11,7 @@ import {
   MetricsChart,
   CodeExample,
   MermaidDiagram,
-} from "@/components/mdx-components";
+} from "@/components/docs/mdx-components";
 import rehypePrettyCode from "rehype-pretty-code";
 
 interface MdxNode {

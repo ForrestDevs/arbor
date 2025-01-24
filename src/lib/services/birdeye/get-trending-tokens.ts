@@ -20,10 +20,13 @@ export interface TrendingTokensResponse {
   total: number;
 }
 
-export const getTrendingTokens = async (
-  offset: number = 0,
-  limit: number = 20
-): Promise<TrendingTokensResponse> => {
+export const getTrendingTokens = async ({
+  offset = 0,
+  limit = 20,
+}: {
+  offset?: number;
+  limit?: number;
+}): Promise<TrendingTokensResponse> => {
   return queryBirdeye<TrendingTokensResponse>("defi/token_trending", {
     sort_by: "rank",
     sort_type: "asc",

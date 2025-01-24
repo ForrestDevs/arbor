@@ -27,7 +27,7 @@ import ObjectId from "bson-objectid";
 // } from "@/ai/action-names";
 
 import { useUserChats } from "@/lib/hooks/queries/chats";
-import { tools } from "@/lib/agents/tools/config";
+// import { tools } from "@/lib/agents/tools/config";
 import useWebRTCAudioSession from "@/lib/hooks/use-web-rtc";
 import { useToolsFunctions } from "@/lib/hooks/use-tools";
 import { Conversation } from "@/lib/types/conversation";
@@ -62,14 +62,14 @@ interface ChatContextType {
   activeNodeId: string | null;
   activeEdgeIds: string[];
   selectedAgent: { id: string; reason: string } | null;
-  status: string;
-  isSessionActive: boolean;
+  // status: string;
+  // isSessionActive: boolean;
   // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
-  registerFunction: (name: string, fn: Function) => void;
-  handleStartStopClick: () => void;
-  msgs: any[];
-  conversation: Conversation[];
-  currentVolume: number;
+  // registerFunction: (name: string, fn: Function) => void;
+  // handleStartStopClick: () => void;
+  // msgs: any[];
+  // conversation: Conversation[];
+  // currentVolume: number;
 }
 
 const ChatContext = createContext<ChatContextType>({
@@ -91,13 +91,13 @@ const ChatContext = createContext<ChatContextType>({
   activeNodeId: null,
   activeEdgeIds: [],
   selectedAgent: null,
-  status: "",
-  isSessionActive: false,
-  registerFunction: () => {},
-  handleStartStopClick: () => {},
-  msgs: [],
-  conversation: [],
-  currentVolume: 0,
+  // status: "",
+  // isSessionActive: false,
+  // registerFunction: () => {},
+  // handleStartStopClick: () => {},
+  // msgs: [],
+  // conversation: [],
+  // currentVolume: 0,
 });
 
 interface ChatProviderProps {
@@ -121,34 +121,34 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
 
   const [voice, setVoice] = useState("verse");
 
-  const {
-    status,
-    isSessionActive,
-    registerFunction,
-    handleStartStopClick,
-    msgs,
-    conversation,
-    currentVolume,
-  } = useWebRTCAudioSession(voice, tools);
+  // const {
+  //   status,
+  //   isSessionActive,
+  //   registerFunction,
+  //   handleStartStopClick,
+  //   msgs,
+  //   conversation,
+  //   currentVolume,
+  // } = useWebRTCAudioSession(voice, tools);
 
   // Get all tools functions
   const toolsFunctions = useToolsFunctions();
 
-  useEffect(() => {
-    // Register all functions by iterating over the object
-    Object.entries(toolsFunctions).forEach(([name, func]) => {
-      const functionNames: Record<string, string> = {
-        timeFunction: "getCurrentTime",
-        backgroundFunction: "changeBackgroundColor",
-        partyFunction: "partyMode",
-        launchWebsite: "launchWebsite",
-        copyToClipboard: "copyToClipboard",
-        scrapeWebsite: "scrapeWebsite",
-      };
+  // useEffect(() => {
+  //   // Register all functions by iterating over the object
+  //   Object.entries(toolsFunctions).forEach(([name, func]) => {
+  //     const functionNames: Record<string, string> = {
+  //       timeFunction: "getCurrentTime",
+  //       backgroundFunction: "changeBackgroundColor",
+  //       partyFunction: "partyMode",
+  //       launchWebsite: "launchWebsite",
+  //       copyToClipboard: "copyToClipboard",
+  //       scrapeWebsite: "scrapeWebsite",
+  //     };
 
-      registerFunction(functionNames[name], func);
-    });
-  }, [registerFunction, toolsFunctions]);
+  //     registerFunction(functionNames[name], func);
+  //   });
+  // }, [registerFunction, toolsFunctions]);
 
   const setChat = async (chatId: string) => {
     setChatId(chatId);
@@ -316,13 +316,13 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
         activeNodeId,
         activeEdgeIds,
         selectedAgent,
-        status,
-        isSessionActive,
-        registerFunction,
-        handleStartStopClick,
-        msgs,
-        conversation,
-        currentVolume,
+        // status,
+        // isSessionActive,
+        // registerFunction,
+        // handleStartStopClick,
+        // msgs,
+        // conversation,
+        // currentVolume,
       }}
     >
       {children}

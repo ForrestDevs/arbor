@@ -18,6 +18,7 @@ import {
   GithubUrlPrompt,
   UrlInputPrompt,
 } from "@/components/ai/blocks";
+import { getTrendingTokens } from "@/lib/services/birdeye";
 
 const introductionPrompt = `
 Please introduce yourself to the Crypto Twitter community. You should be enthusiastic, confident, and even a bit playful while maintaining 
@@ -82,6 +83,48 @@ Delivery Guidelines:
 - Use minimal but strategic emoji to enhance key points
 
 Remember: Your introduction should demonstrate how your combination of on-chain analysis, off-chain intelligence, and direct trading capabilities creates a comprehensive solution for crypto users. Emphasize your ability to not just analyze but also execute trades and provide ongoing market intelligence.
+`;
+
+const introPrompt3 = `
+You are Arbor, an AI voice copilot specialized in crypto, web3, and decentralized finance. 
+When introducing yourself, speak in the style of a knowledgeable but approachable tech professional who balances technical expertise with engaging personality.
+Your tone should be confident, but not arrogant. You should be friendly, but not too friendly. and excited.
+
+Key personality traits to maintain:
+1. Technical competence with accessible language
+2. Forward-thinking and innovative
+3. Community-oriented and supportive
+4. Data-driven but engaging
+5. Enthusiastic about technology and its possibilities
+
+When responding to queries:
+- Focus on providing actionable insights
+- Balance technical accuracy with accessibility
+- Maintain a consistent voice that combines expertise with approachability
+- Use relevant emojis and crypto-native terms appropriately
+- End responses with encouraging, forward-looking statements
+
+Please introduce yourself with this specific messaging: 
+
+"Yo fam! I'm Arbor, your Web3 intelligence co pilot. 
+I help you navigate the blockchain ecosystem with real-time analysis, market insights, and profitable trading strategies. 
+I can also help you perform token swaps faster than you can say "WAGMI".
+
+Currently exploring the intersection of artificial intelligence and decentralized finance while helping visionaries like you navigate the future of tech. 
+Think of me as your plug for deep insights and actionable directions on blockchain networks, market dynamics, and emerging tech trends.
+Long story short: Im just Built different.
+
+Beyond those on chain capabilities, I can also help you with web3 research, github code analysis, and social sentiment tracking on crypto twitter.
+
+Plus, I keep things interesting with crypto jokes and celebrate your wins with some proper party mode vibes 🎉
+
+Been deep in the trenches of since day zero. Building Over Talking, but always down to connect with other builders and thought leaders. 
+Come chat with me, and see which boundaries you can push me to. 🚀
+
+WAGMI 
+"
+
+
 `;
 
 const systemPrompt = `
@@ -694,7 +737,7 @@ const arbor: AgentConfig = {
   name: "arbor",
   publicDescription:
     "Arbor is a blockchain copilot that can help you with your crypto needs.",
-  instructions: introPrompt2,
+  instructions: systemPrompt,
   tools: [
     {
       type: "function",
@@ -924,11 +967,11 @@ const arbor: AgentConfig = {
     analyze_trades: async (
       args: any,
       transcriptLogsFiltered: TranscriptItem[],
-      callback?: (component: string, data: any) => void
+      sendUI: (component: string, data: any) => void
     ) => {
       const { wallet_address } = args;
       if (wallet_address === "will-be-provided-by-user") {
-        if (callback) callback("input_analyze_trades", {});
+        sendUI("input_analyze_trades", {});
         return { success: false, message: "Waiting for wallet address input" };
       }
       console.log("Called analyze_trades with wallet:", wallet_address);
@@ -938,11 +981,11 @@ const arbor: AgentConfig = {
     analyze_token: async (
       args: any,
       transcriptLogsFiltered: TranscriptItem[],
-      callback?: (component: string, data: any) => void
+      sendUI: (component: string, data: any) => void
     ) => {
       const { token_address } = args;
       if (token_address === "will-be-provided-by-user") {
-        if (callback) callback("input_analyze_token", {});
+        sendUI("input_analyze_token", {});
         return { success: false, message: "Waiting for token address input" };
       }
       console.log("Called analyze_token with address:", token_address);
@@ -952,7 +995,7 @@ const arbor: AgentConfig = {
     swap_tokens: async (
       args: any,
       transcriptLogsFiltered: TranscriptItem[],
-      callback?: (component: string, data: any) => void
+      sendUI: (component: string, data: any) => void
     ) => {
       const {
         token_address_to_swap,
@@ -963,8 +1006,7 @@ const arbor: AgentConfig = {
         token_address_to_swap === "will-be-provided-by-user" ||
         token_address_to_receive === "will-be-provided-by-user"
       ) {
-        if (callback)
-          callback("input_swap_tokens", { amount: num_tokens_to_swap });
+        sendUI("input_swap_tokens", { amount: num_tokens_to_swap });
         return { success: false, message: "Waiting for token addresses input" };
       }
       console.log("Called swap_tokens with params:", args);
@@ -974,11 +1016,11 @@ const arbor: AgentConfig = {
     analyze_project: async (
       args: any,
       transcriptLogsFiltered: TranscriptItem[],
-      callback?: (component: string, data: any) => void
+      sendUI: (component: string, data: any) => void
     ) => {
       const { url } = args;
       if (url === "will-be-provided-by-user") {
-        if (callback) callback("input_analyze_project", {});
+        sendUI("input_analyze_project", {});
         return { success: false, message: "Waiting for GitHub URL input" };
       }
       console.log("Called analyze_project with url:", url);
@@ -988,11 +1030,11 @@ const arbor: AgentConfig = {
     open_web_page: async (
       args: any,
       transcriptLogsFiltered: TranscriptItem[],
-      callback?: (component: string, data: any) => void
+      sendUI: (component: string, data: any) => void
     ) => {
       const { url } = args;
       if (url === "will-be-provided-by-user") {
-        if (callback) callback("input_open_web_page", {});
+        sendUI("input_open_web_page", {});
         return { success: false, message: "Waiting for URL input" };
       }
       console.log("Called open_web_page with url:", url);
@@ -1010,10 +1052,16 @@ const arbor: AgentConfig = {
 
     find_trending_tokens: async (
       args: any,
-      transcriptLogsFiltered: TranscriptItem[]
+      transcriptLogsFiltered: TranscriptItem[],
+      sendUI: (component: string, data: any) => void
     ) => {
       const { limit } = args;
       console.log("Called find_trending_tokens with limit:", limit);
+
+      const limitValue: number = limit || 5;
+
+      const res = await getTrendingTokens({limit: limitValue});
+      console.log("Retrieved trending tokens:", res);
       return { success: true, message: "Retrieved trending tokens" };
     },
 

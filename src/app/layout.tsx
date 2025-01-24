@@ -33,7 +33,7 @@ const vt323 = VT323({
 
 export const metadata: Metadata = {
   title: "Arbor AI",
-  description: "Sovereign Self Learning Agents",
+  description: "Advanced blockchain copilot",
 };
 
 export default function RootLayout({

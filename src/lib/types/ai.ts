@@ -45,7 +45,7 @@ export interface AgentConfig {
     (
       args: any,
       transcriptLogsFiltered: TranscriptItem[],
-      callback?: (component: string, data: any) => void
+      sendUI: (component: string, data: any) => void
     ) => Promise<any> | any
   >;
   uiComponents?: Record<string, React.ComponentType<any>>;

@@ -23,7 +23,7 @@ export async function POST() {
           input_audio_format: "pcm16",
           output_audio_format: "pcm16",
           turn_detection: null,
-          temperature: 0.9,
+          temperature: 0.6,
         }),
       }
     );

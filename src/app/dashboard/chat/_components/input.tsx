@@ -10,7 +10,7 @@ import {
   TooltipTrigger,
   TooltipProvider,
 } from "@/components/ui/tooltip";
-import { useEnterSubmit } from "../_hooks";
+import { useEnterSubmit } from "@/lib/hooks/use-enter-submit";
 import { useAi } from "./context";
 import { cn } from "@/lib/utils";
 import { usePrivy } from "@privy-io/react-auth";
@@ -18,27 +18,27 @@ import { usePrivy } from "@privy-io/react-auth";
 const ChatInput: React.FC = () => {
   const { user } = usePrivy();
 
-  const {
-    input,
-    setInput,
-    onSubmit,
-    isLoading,
-    inputDisabledMessage,
-    handleStartStopClick,
-    isSessionActive,
-    status,
-  } = useAi();
+  // const {
+  //   input,
+  //   setInput,
+  //   onSubmit,
+  //   isLoading,
+  //   inputDisabledMessage,
+  //   handleStartStopClick,
+  //   isSessionActive,
+  //   status,
+  // } = useAi();
 
-  const { onKeyDown } = useEnterSubmit({ onSubmit: onSubmit });
+  // const { onKeyDown } = useEnterSubmit({ onSubmit: onSubmit });
 
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
   return (
     <form
-      onSubmit={(e) => {
-        e.preventDefault();
-        onSubmit();
-      }}
+      // onSubmit={(e) => {
+      //   e.preventDefault();
+      //   onSubmit();
+      // }}
       className={cn(
         // Base styles
         "w-full rounded-md flex flex-col overflow-hidden transition-colors duration-200 ease-in-out border border-transparent shadow-none",
@@ -46,10 +46,10 @@ const ChatInput: React.FC = () => {
         "bg-neutral-100 focus-within:border-brand-600",
         // Dark mode styles
         "dark:bg-neutral-800/50 dark:focus-within:border-brand-600",
-        isLoading && "opacity-50 cursor-not-allowed"
+        // isLoading && "opacity-50 cursor-not-allowed"
       )}
     >
-      <OptionalTooltip text={inputDisabledMessage}>
+      {/* <OptionalTooltip text={inputDisabledMessage}>
         <div className="flex items-center justify-between">
           <Textarea
             ref={inputRef}
@@ -90,7 +90,7 @@ const ChatInput: React.FC = () => {
             </Tooltip>
           </TooltipProvider>
         </div>
-      )}
+      )} */}
     </form>
   );
 };

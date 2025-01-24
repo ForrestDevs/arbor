@@ -12,18 +12,18 @@ const GetTrendingTokens: React.FC<Props> = ({ tool, prevToolAgent }) => {
     <ToolCard
       tool={tool}
       loadingText={`Getting Trending Tokens...`}
-      result={{
-        heading: (result: any) =>
-          result.body
-            ? `Fetched Trending Tokens`
-            : `Failed to fetch trending tokens`,
-        body: (result: any) =>
-          result.body ? (
-            <TrendingTokens body={result.body} />
-          ) : (
-            "No trending tokens found"
-          ),
-      }}
+      // result={{
+      //   heading: (result: any) =>
+      //     result.body
+      //       ? `Fetched Trending Tokens`
+      //       : `Failed to fetch trending tokens`,
+      //   body: (result: any) =>
+      //     result.body ? (
+      //       <TrendingTokens body={result.body} />
+      //     ) : (
+      //       "No trending tokens found"
+      //     ),
+      // }}
       defaultOpen={true}
       prevToolAgent={prevToolAgent}
       className="w-full"

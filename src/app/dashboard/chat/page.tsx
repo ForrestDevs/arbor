@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import ReactFlow, { Background, Node, Edge, Controls } from "reactflow";
 import "reactflow/dist/style.css";
-import CustomNode from "@/components/custom-node";
+// import CustomNode from "@/components/custom-node";
 import { ChatInterface } from "./chat";
 import {
   ResizableHandle,
@@ -15,9 +15,9 @@ import {
 } from "@/components/ui/resizable";
 import { useAi } from "./_components/context";
 
-const nodeTypes = {
-  custom: CustomNode,
-};
+// const nodeTypes = {
+//   custom: CustomNode,
+// };
 
 const initialNodes: Node[] = [
   {
@@ -207,7 +207,7 @@ export default function InterfacePage() {
         <div className="h-full border-r dark:border-gray-800">
           <div className="flex flex-1 overflow-hidden h-full rounded-lg border">
             <div className="flex-1 bg-muted/5">
-              <ReactFlow
+              {/* <ReactFlow
                 nodes={initialNodes.map((node) => ({
                   ...node,
                   style: {
@@ -240,7 +240,7 @@ export default function InterfacePage() {
               >
                 <Controls />
                 <Background color="#ddd" gap={16} />
-              </ReactFlow>
+              </ReactFlow> */}
             </div>
           </div>
         </div>

@@ -8,7 +8,6 @@ import { DashboardBreadcrumbs } from "@/components/layout/dashboard-breadcrumbs"
 import { Separator } from "@/components/ui/separator";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { ChatHistory } from "@/components/layout/chat-history";
-import { AiProvider } from "@/components/ai/provider";
 import { AIProvider } from "@/components/ai/context";
 
 export default function DashboardLayout({

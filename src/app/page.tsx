@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import useScreenSize from "@/lib/hooks/use-screen-size";
-import PixelTrail from "@/components/fancy/pixel-trail";
+import PixelTrail from "@/components/ui/pixel-trail";
 import Image from "next/image";
 import { useLogin } from "@/lib/hooks/use-login";
 import { useRouter } from "next/navigation";
