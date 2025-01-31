@@ -1,117 +1,77 @@
 "use client";
 
-import React from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useAI } from "@/components/ai/context";
+import { DEFAULT_EXPLORER, FormProps } from "@/lib/types/jupiter";
+import { useUnifiedWalletContext } from "@jup-ag/wallet-adapter";
+import { init, syncProps } from "@jup-ag/terminal";
+import { PublicKey } from "@solana/web3.js";
+import { usePrivy, useWallets } from "@privy-io/react-auth";
+import { Skeleton } from "@/components/ui/skeleton";
+import Swap from "./swap";
+import { Token } from "@/lib/types/solana/token";
+import { useTokenDataByAddress } from "@/lib/hooks/queries/token-data/use-token-data-by-address";
 
 interface SwapConfirmationViewProps {
-  message: string;
-  data?: {
-    fromToken: {
-      symbol: string;
-      amount: number;
-      usdValue: number;
-    };
-    toToken: {
-      symbol: string;
-      estimatedAmount: number;
-      usdValue: number;
-    };
-    exchangeRate: number;
-    priceImpact: number;
-    fee: number;
-  };
+  token_address_to_swap: string;
+  token_address_to_receive: string;
+  num_tokens_to_swap: string;
 }
 
 export const SwapConfirmationView: React.FC<SwapConfirmationViewProps> = ({
-  message,
-  data,
+  token_address_to_swap,
+  token_address_to_receive,
+  num_tokens_to_swap,
 }) => {
+  // const { inputTokenData, outputTokenData, args } = data;
   const { sendClientEvent } = useAI();
 
-  const handleConfirm = () => {
-    sendClientEvent({
-      type: "conversation.item.create",
-      item: {
-        type: "message",
-        role: "user",
-        content: [
-          {
-            type: "input_text",
-            text: "Confirm swap",
-          },
-        ],
-      },
-    });
-    sendClientEvent({ type: "response.create" });
-  };
+  const { data: inputTokenData, isLoading: inputTokenLoading } =
+    useTokenDataByAddress(token_address_to_swap);
+  const { data: outputTokenData, isLoading: outputTokenLoading } =
+    useTokenDataByAddress(token_address_to_receive);
 
   return (
     <Card className="w-full">
       <CardContent className="p-6">
         <h3 className="text-lg font-semibold mb-4">Confirm Swap</h3>
+        <Swap
+          initialInputToken={inputTokenData}
+          initialOutputToken={outputTokenData}
+          inputLabel="Sell"
+          outputLabel="Buy"
+          initialInputAmount={num_tokens_to_swap}
+          swapText="Swap"
+          swappingText="Swapping..."
+          onSuccess={(tx) => {
+            console.log("tx", tx);
 
-        {data ? (
-          <div className="space-y-6">
-            <div className="space-y-4">
-              <div className="p-4 bg-gray-50 rounded-lg">
-                <div className="text-sm text-gray-600">You Pay</div>
-                <div className="flex justify-between items-center mt-1">
-                  <div className="text-lg font-semibold">
-                    {data.fromToken.amount} {data.fromToken.symbol}
-                  </div>
-                  <div className="text-sm text-gray-600">
-                    ≈ ${data.fromToken.usdValue.toLocaleString()}
-                  </div>
-                </div>
-              </div>
-
-              <div className="p-4 bg-gray-50 rounded-lg">
-                <div className="text-sm text-gray-600">You Receive</div>
-                <div className="flex justify-between items-center mt-1">
-                  <div className="text-lg font-semibold">
-                    ≈ {data.toToken.estimatedAmount} {data.toToken.symbol}
-                  </div>
-                  <div className="text-sm text-gray-600">
-                    ≈ ${data.toToken.usdValue.toLocaleString()}
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="space-y-2 text-sm">
-              <div className="flex justify-between">
-                <span className="text-gray-600">Exchange Rate</span>
-                <span>
-                  1 {data.fromToken.symbol} = {data.exchangeRate}{" "}
-                  {data.toToken.symbol}
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-600">Price Impact</span>
-                <span
-                  className={
-                    data.priceImpact > 2 ? "text-red-600" : "text-gray-900"
-                  }
-                >
-                  {data.priceImpact}%
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-600">Network Fee</span>
-                <span>${data.fee}</span>
-              </div>
-            </div>
-
-            <Button onClick={handleConfirm} className="w-full">
-              Confirm Swap
-            </Button>
-          </div>
-        ) : (
-          <div className="text-gray-600">{message}</div>
-        )}
+            // addToolResult<SolanaTradeResultBodyType>(toolCallId, {
+            //   message: `Swap successful!`,
+            //   body: {
+            //     transaction: tx,
+            //     inputAmount: args.inputAmount || 0,
+            //     inputToken: inputTokenData?.symbol || "",
+            //     outputToken: outputTokenData?.symbol || "",
+            //   },
+            // });
+          }}
+          onError={(error) => {
+            console.log("error", error);
+            // addToolResult(toolCallId, {
+            //   message: `Swap failed: ${error}`,
+            // });
+          }}
+          onCancel={() => {
+            console.log("cancelled");
+            // addToolResult(toolCallId, {
+            //   message: `Swap cancelled`,
+            // });
+          }}
+        />
       </CardContent>
     </Card>
   );
-}; 
+};

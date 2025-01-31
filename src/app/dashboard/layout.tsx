@@ -29,7 +29,7 @@ export default function DashboardLayout({
                   <DashboardBreadcrumbs />
                 </div>
                 <div className="flex items-center gap-2">
-                  <ChatHistory />
+                  {/* <ChatHistory /> */}
                   <ThemeToggle />
                 </div>
               </div>

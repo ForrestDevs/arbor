@@ -19,6 +19,29 @@ export default function Copilot() {
         <ResizablePanel defaultSize={50} minSize={0}>
           <ResizablePanelGroup direction="vertical" className="border">
             <ResizablePanel defaultSize={50} minSize={5}>
+              <Ring />
+            </ResizablePanel>
+            <ResizableHandle withHandle />
+            <ResizablePanel defaultSize={50} minSize={5}>
+              <Transcript />
+            </ResizablePanel>
+          </ResizablePanelGroup>
+        </ResizablePanel>
+        <ResizableHandle withHandle />
+        <ResizablePanel defaultSize={50} minSize={5}>
+          <Interactions />
+        </ResizablePanel>
+      </ResizablePanelGroup>
+      <BottomToolbar />
+    </div>
+  );
+}
+
+{
+  /* <ResizablePanelGroup direction="horizontal" className="border">
+        <ResizablePanel defaultSize={50} minSize={0}>
+          <ResizablePanelGroup direction="vertical" className="border">
+            <ResizablePanel defaultSize={50} minSize={5}>
               <Events />
             </ResizablePanel>
             <ResizableHandle withHandle />
@@ -40,7 +63,34 @@ export default function Copilot() {
           </ResizablePanelGroup>
         </ResizablePanel>
       </ResizablePanelGroup>
-      <BottomToolbar />
-    </div>
-  );
+      <BottomToolbar /> */
 }
+
+// <div className="text-base h-full w-full flex flex-col items-center relative max-w-full">
+//       <ResizablePanelGroup direction="horizontal" className="border">
+//         <ResizablePanel defaultSize={30} minSize={0}>
+//           <Transcript />
+//         </ResizablePanel>
+//         <ResizableHandle withHandle />
+//         <ResizablePanel defaultSize={70} minSize={5}>
+//           <ResizablePanelGroup direction="vertical" className="border">
+//             <ResizablePanel defaultSize={45} minSize={0}>
+//               <ResizablePanelGroup direction="horizontal" className="border">
+//                 <ResizablePanel defaultSize={60} minSize={0}>
+//                   <Ring />
+//                 </ResizablePanel>
+//                 <ResizableHandle withHandle />
+//                 <ResizablePanel defaultSize={40} minSize={0}>
+//                   <Events />
+//                 </ResizablePanel>
+//               </ResizablePanelGroup>
+//             </ResizablePanel>
+//             <ResizableHandle withHandle />
+//             <ResizablePanel defaultSize={55} minSize={5}>
+//               <Interactions />
+//             </ResizablePanel>
+//           </ResizablePanelGroup>
+//         </ResizablePanel>
+//       </ResizablePanelGroup>
+//       <BottomToolbar />
+//     </div>

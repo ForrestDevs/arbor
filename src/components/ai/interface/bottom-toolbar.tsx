@@ -2,6 +2,15 @@ import React from "react";
 import { SessionStatus } from "@/lib/types/ai";
 import { Button } from "@/components/ui/button";
 import { useAI } from "../context";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { HelpCircle } from "lucide-react";
 
 interface BottomToolbarProps {
   sessionStatus: SessionStatus;
@@ -104,6 +113,72 @@ function BottomToolbar() {
           Talk
         </Button>
       </div>
+      <Dialog>
+        <DialogTrigger>
+          <HelpCircle className="w-4 h-4" />
+          Tools
+        </DialogTrigger>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Available Tools & Commands</DialogTitle>
+            <DialogDescription>
+              Here are some commands you can use:
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex flex-col gap-2 mt-2">
+            <ul className="space-y-2 ml-2">
+              <li className="flex items-center gap-2">
+                <span className="font-mono bg-muted px-2 py-0.5 rounded">
+                  &quot;Show trending tokens&quot;
+                </span>
+                <span className="text-muted-foreground">
+                  View currently trending tokens
+                </span>
+              </li>
+              <li className="flex items-center gap-2">
+                <span className="font-mono bg-muted px-2 py-0.5 rounded">
+                  &quot;Analyze token [symbol]&quot;
+                </span>
+                <span className="text-muted-foreground">
+                  Get detailed analysis of a specific token
+                </span>
+              </li>
+              <li className="flex items-center gap-2">
+                <span className="font-mono bg-muted px-2 py-0.5 rounded">
+                  &quot;Show my portfolio&quot;
+                </span>
+                <span className="text-muted-foreground">
+                  View your crypto portfolio
+                </span>
+              </li>
+              <li className="flex items-center gap-2">
+                <span className="font-mono bg-muted px-2 py-0.5 rounded">
+                  &quot;Analyze wallet [address]&quot;
+                </span>
+                <span className="text-muted-foreground">
+                  Get insights about a wallet address
+                </span>
+              </li>
+              <li className="flex items-center gap-2">
+                <span className="font-mono bg-muted px-2 py-0.5 rounded">
+                  &quot;Search web for [query]&quot;
+                </span>
+                <span className="text-muted-foreground">
+                  Search the web for crypto information
+                </span>
+              </li>
+              <li className="flex items-center gap-2">
+                <span className="font-mono bg-muted px-2 py-0.5 rounded">
+                  &quot;Party mode&quot;
+                </span>
+                <span className="text-muted-foreground">
+                  Enable fun visualization effects
+                </span>
+              </li>
+            </ul>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {/* <div className="flex flex-row items-center gap-2">
         <input

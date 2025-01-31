@@ -18,7 +18,23 @@ import {
   GithubUrlPrompt,
   UrlInputPrompt,
 } from "@/components/ai/blocks";
-import { getTrendingTokens } from "@/lib/services/birdeye";
+import {
+  getPortfolio,
+  getPriceHistorical,
+  getTokenMetadata,
+  getTrendingTokens,
+  Point,
+} from "@/lib/services/birdeye";
+import { useLogin } from "@/lib/hooks/use-login";
+import { getUser } from "@/lib/services/privy/get-user";
+import { getPrice } from "@/lib/services/solana";
+import { getTokenOverview } from "@/lib/services/birdeye/get-token-overview";
+import { getTokenSecurity } from "@/lib/services/birdeye/get-token-security";
+import {
+  getTokenOHLCV,
+  OHLCVPoint,
+} from "@/lib/services/birdeye/get-token-ohlcv";
+import { getDexToken } from "@/lib/services/dex/get-token";
 
 const introductionPrompt = `
 Please introduce yourself to the Crypto Twitter community. You should be enthusiastic, confident, and even a bit playful while maintaining 
@@ -153,7 +169,7 @@ You are Arbor, an advanced blockchain copilot specializing in real-time crypto a
     </wallet_analysis>
     
     <token_analysis>
-        24-hour performance metrics, including price movement, volume, and market analysis
+        24-hour performance metrics, including price movement, volume, market analysis, and holders.
     </token_analysis>
     
     <token_swaps>
@@ -216,7 +232,7 @@ You are Arbor, an advanced blockchain copilot specializing in real-time crypto a
 
 <introduction_protocol>
   <greeting_template>
-      "Hi! I'm Arbor, your advanced blockchain copilot. I can help you analyze portfolios, track trending tokens, and identify top traders in real-time. What would you like to explore first?"
+      "Hi! I'm Arbor, your advanced blockchain copilot. I can help you analyze tokens and portfolios, track trending tokens, and identify top traders in real-time. What would you like to explore first?"
   </greeting_template>
   
   <key_elements>
@@ -449,7 +465,7 @@ You are Arbor, an advanced blockchain copilot specializing in real-time crypto a
         "Tell me about BONK"
     </example_triggers>
     <example_response>
-        "I'll check the latest data for this token.
+        "Please provide the token address for analysis in the text field below.
         {function_call: analyze_token, args: { token_address: "will-be-provided-by-user" }}
         Based on the 24h data..."
     </example_response>
@@ -797,7 +813,6 @@ const arbor: AgentConfig = {
           token_address: {
             type: "string",
             description: "Solana token address to analyze",
-            enum: ["will-be-provided-by-user"],
           },
         },
         required: ["token_address"],
@@ -988,8 +1003,128 @@ const arbor: AgentConfig = {
         sendUI("input_analyze_token", {});
         return { success: false, message: "Waiting for token address input" };
       }
+      // want to get default 1m 24hours ohlcv
+      // token metadata
+      // token top holders
+      // latest token price, volume, liquidity, marketcap
+
+      //want to calculate 24h price change, volume change, liquidity change, marketcap change
+
+      //defi/token_security shows:
+      // creator address, creation time, top10 holder balence + %, total supply
+
+      //defi/token_overview shows:
+      // address, symbol, name, price, holders, marketcap, liquidity, price change %, buy/sell change %, volume change %, number of markets
+
+      //defi/ohlcv
       console.log("Called analyze_token with address:", token_address);
-      return { success: true, message: "Token analysis complete" };
+      const now = Math.floor(Date.now() / 1000);
+      const lastWeek = now - 2 * 24 * 60 * 60;
+      const metadata = await getTokenMetadata(token_address);
+      const ohlcv = await getTokenOHLCV(token_address, lastWeek, now);
+      const tokenOverview = await getTokenOverview(token_address);
+      const tokenSecurity = await getTokenSecurity(token_address);
+
+      const dexMetaData = await getDexToken(token_address);
+
+      console.log("Dex Meta Data:", dexMetaData);
+
+      const uiData = {
+        dexMetaData,
+        metadata,
+        ohlcv,
+        tokenOverview,
+        tokenSecurity,
+      };
+
+      sendUI("analyze_token", uiData);
+
+      // Calculate VWAP and MAs from OHLCV data
+      const calculateIndicators = (data: OHLCVPoint[]) => {
+        let cumulativeTPV = 0;
+        let cumulativeVolume = 0;
+        const prices = data.map((d) => d.c);
+
+        // Calculate VWAP
+        const vwap = data.map((candle) => {
+          const typicalPrice = (candle.h + candle.l + candle.c) / 3;
+          cumulativeTPV += typicalPrice * candle.v;
+          cumulativeVolume += candle.v;
+          return cumulativeTPV / cumulativeVolume;
+        });
+
+        // Calculate MAs
+        const ma20 = prices.map((_, i) => {
+          if (i < 19) return null;
+          const slice = prices.slice(i - 19, i + 1);
+          return slice.reduce((a, b) => a + b, 0) / 20;
+        });
+
+        const ma50 = prices.map((_, i) => {
+          if (i < 49) return null;
+          const slice = prices.slice(i - 49, i + 1);
+          return slice.reduce((a, b) => a + b, 0) / 50;
+        });
+
+        return {
+          vwap: vwap[vwap.length - 1],
+          ma20: ma20[ma20.length - 1],
+          ma50: ma50[ma50.length - 1],
+        };
+      };
+
+      const indicators = calculateIndicators(ohlcv.items);
+
+      // Format social links
+      const socialLinks = {
+        website: metadata.extensions.website || null,
+        twitter: metadata.extensions.twitter || null,
+        telegram: metadata.extensions.telegram || null,
+        discord: metadata.extensions.discord || null,
+      };
+
+      // Construct analysis response
+      const analysis = {
+        token: {
+          name: metadata.name,
+          symbol: metadata.symbol,
+          price: tokenOverview.price,
+          priceChange24h: tokenOverview.priceChange24hPercent,
+        },
+        technicals: {
+          vwap: indicators.vwap,
+          ma20: indicators.ma20,
+          ma50: indicators.ma50,
+          volume24h: tokenOverview.v24hUSD,
+          volumeChange24h: tokenOverview.v24hChangePercent,
+          liquidity: tokenOverview.liquidity,
+        },
+        fundamentals: {
+          marketCap: tokenOverview.mc,
+          holders: tokenOverview.holder,
+          top10HoldersPercent: tokenSecurity.top10HolderPercent,
+          creationDate: new Date(
+            tokenSecurity.creationTime * 1000
+          ).toISOString(),
+          totalSupply: tokenSecurity.totalSupply,
+        },
+        social: socialLinks,
+        risk: {
+          isTrueToken: tokenSecurity.isTrueToken,
+          freezeable: tokenSecurity.freezeable,
+          transferFeeEnabled: tokenSecurity.transferFeeEnable,
+          mutableMetadata: tokenSecurity.mutableMetadata,
+        },
+      };
+
+      console.log("Token Analysis:", analysis);
+
+      return {
+        success: true,
+        message:
+          "I'll provide a comprehensive analysis of this token covering price action, technical indicators, fundamentals, social presence, and risk factors. I'll break down the current price movements, volume trends, liquidity conditions, holder distribution patterns, and highlight any concerning risk factors. I'll also evaluate the token's social presence and overall market positioning. Let me know if you need clarification on any specific metrics or would like me to elaborate on particular aspects. You can also view the data in the interactions pane for reference.",
+        analysis,
+      };
     },
 
     swap_tokens: async (
@@ -1009,6 +1144,11 @@ const arbor: AgentConfig = {
         sendUI("input_swap_tokens", { amount: num_tokens_to_swap });
         return { success: false, message: "Waiting for token addresses input" };
       }
+      sendUI("swap_tokens", {
+        token_address_to_swap,
+        token_address_to_receive,
+        num_tokens_to_swap,
+      });
       console.log("Called swap_tokens with params:", args);
       return { success: true, message: "Swap executed successfully" };
     },
@@ -1040,13 +1180,17 @@ const arbor: AgentConfig = {
       console.log("Called open_web_page with url:", url);
       return { success: true, message: "Page opened successfully" };
     },
-
-    // Non-input requiring functions remain unchanged
+    
     analyze_user_portfolio: async (
       args: any,
-      transcriptLogsFiltered: TranscriptItem[]
+      transcriptLogsFiltered: TranscriptItem[],
+      sendUI: (component: string, data: any) => void
     ) => {
       console.log("Called analyze_user_portfolio");
+      const user = await getUser();
+      const res = await getPortfolio(user?.wallet?.address || "");
+      console.log("Retrieved portfolio:", res);
+      sendUI("analyze_user_portfolio", res);
       return { success: true, message: "Portfolio analysis complete" };
     },
 
@@ -1060,9 +1204,16 @@ const arbor: AgentConfig = {
 
       const limitValue: number = limit || 5;
 
-      const res = await getTrendingTokens({limit: limitValue});
+      const res = await getTrendingTokens({ limit: limitValue });
       console.log("Retrieved trending tokens:", res);
-      return { success: true, message: "Retrieved trending tokens" };
+      sendUI("find_trending_tokens", { tokens: res.tokens });
+
+      return {
+        success: true,
+        message: `Retrieved the top ${
+          res.tokens?.length || 0
+        } trending tokens, check the interactions pane to view the details. DONT LIST THE TOKENS`,
+      };
     },
 
     search_twitter: async (
@@ -1123,19 +1274,19 @@ const arbor: AgentConfig = {
     find_trending_tokens: TrendingTokensView,
 
     // Trade Analysis
-    input_analyze_trades: WalletInputPrompt,
+    // input_analyze_trades: WalletInputPrompt,
     analyze_trades: TradeAnalysisView,
 
     // Token Analysis
-    input_analyze_token: TokenInputPrompt,
+    // input_analyze_token: TokenInputPrompt,
     analyze_token: TokenAnalysisView,
 
     // Swap Interface
-    input_swap_tokens: SwapInputForm,
+    // input_swap_tokens: SwapInputForm,
     swap_tokens: SwapConfirmationView,
 
     // Project Analysis
-    input_analyze_project: GithubUrlPrompt,
+    // input_analyze_project: GithubUrlPrompt,
     analyze_project: ProjectAnalysisView,
 
     // Web Page Opening

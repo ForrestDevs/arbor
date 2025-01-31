@@ -1,4 +1,4 @@
-import { getMdxContent } from "@/lib/mdx";
+import { getMdxContent } from "@/lib/utils/mdx";
 
 export default async function DocsPage() {
   const { content } = await getMdxContent("index");

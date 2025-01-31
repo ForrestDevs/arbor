@@ -243,13 +243,6 @@ export const useToolsFunctions = () => {
     };
   };
 
-  const getTrendingTokens = async ({ limit }: { limit: number }) => {
-    const tokens = await getTrendingTokensBirdeye(limit);
-    return {
-      success: true,
-      message: `The trending tokens are ${tokens}`,
-    };
-  };
 
   return {
     timeFunction,
@@ -260,6 +253,5 @@ export const useToolsFunctions = () => {
     scrapeWebsite,
     getTokenAddress,
     getPriceData,
-    getTrendingTokens,
   };
 };

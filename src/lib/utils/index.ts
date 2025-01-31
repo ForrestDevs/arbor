@@ -73,3 +73,11 @@ export function chunk(
 
   return chunks;
 }
+
+export function chunkArray<T>(array: T[], size: number): T[][] {
+  return array.reduce((acc, _, i) => {
+    if (i % size === 0) acc.push([]);
+    acc[acc.length - 1].push(array[i]);
+    return acc;
+  }, [] as T[][]);
+}

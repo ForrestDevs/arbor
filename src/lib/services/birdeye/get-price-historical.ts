@@ -17,7 +17,7 @@ export const getPriceHistorical = async (
   return queryBirdeye<PriceHistoryResponse>("defi/history_price", {
     address,
     address_type: "token",
-    type: "5m",
+    type: "1m",
     time_from: start,
     time_to: end,
   });

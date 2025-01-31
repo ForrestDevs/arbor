@@ -1,8 +1,9 @@
-import "server-only";
+"use server";
 
 import prisma from "../index";
 import { Chat } from "@prisma/client";
 import { Message } from "ai";
+import { Log, LoggedEvent, TranscriptItem } from "@/lib/types/ai";
 
 // CREATE
 
@@ -54,6 +55,8 @@ export const getChat = async (
     return {
       ...chat,
       messages: chat.messages as any,
+      transcript: chat.transcript as any,
+      loggedEvents: chat.loggedEvents as any,
     };
   } catch (error) {
     if (error instanceof Error) {
@@ -83,7 +86,7 @@ export const findChatsByUser = async (
         createdAt: "desc",
       },
     });
-  
+
     if (!chats) {
       return [];
     }
@@ -91,6 +94,8 @@ export const findChatsByUser = async (
     return chats.map((chat) => ({
       ...chat,
       messages: chat.messages as any,
+      transcript: chat.transcript as any,
+      loggedEvents: chat.loggedEvents as any,
     }));
   } catch (error) {
     if (error instanceof Error) {
@@ -151,6 +156,52 @@ export const addMessageToChat = async (
 /**
  * **DATABASE SERVICE**
  *
+ * Adds a new message to an existing chat.
+ *
+ * @param {Chat["id"]} id - The ID of the chat to update.
+ * @param {Chat["userId"]} userId - The user ID associated with the chat.
+ * @param {ChatMessage} message - The message to be added to the chat.
+ * @returns {Promise<boolean>} True if the update was successful, false otherwise.
+ */
+export const addTranscriptMessageToChat = async (
+  id: Chat["id"],
+  userId: Chat["userId"],
+  message: TranscriptItem
+): Promise<boolean> => {
+  const chat = await prisma.chat.update({
+    where: { id, userId },
+    data: { transcript: { push: message as any } },
+  });
+
+  return !!chat;
+};
+
+/**
+ * **DATABASE SERVICE**
+ *
+ * Adds a new message to an existing chat.
+ *
+ * @param {Chat["id"]} id - The ID of the chat to update.
+ * @param {Chat["userId"]} userId - The user ID associated with the chat.
+ * @param {ChatMessage} message - The message to be added to the chat.
+ * @returns {Promise<boolean>} True if the update was successful, false otherwise.
+ */
+export const addLoggedEventToChat = async (
+  id: Chat["id"],
+  userId: Chat["userId"],
+  message: Log
+): Promise<boolean> => {
+  const chat = await prisma.chat.update({
+    where: { id, userId },
+    data: { loggedEvents: { push: message as any } },
+  });
+
+  return !!chat;
+};
+
+/**
+ * **DATABASE SERVICE**
+ *
  * Updates a chat's messages.
  *
  * @param {Chat["id"]} id - The ID of the chat to update.
@@ -166,6 +217,52 @@ export const updateChatMessages = async (
   const chat = await prisma.chat.update({
     where: { id, userId },
     data: { messages: messages as any },
+  });
+
+  return !!chat;
+};
+
+/**
+ * **DATABASE SERVICE**
+ *
+ * Updates a chat's transcript.
+ *
+ * @param {Chat["id"]} id - The ID of the chat to update.
+ * @param {Chat["userId"]} userId - The user ID associated with the chat.
+ * @param {TranscriptItem[]} transcript - The new transcript.
+ * @returns {Promise<boolean>} True if the update was successful, false otherwise.
+ */
+export const updateChatTranscript = async (
+  id: Chat["id"],
+  userId: Chat["userId"],
+  transcript: TranscriptItem[]
+): Promise<boolean> => {
+  const chat = await prisma.chat.update({
+    where: { id, userId },
+    data: { transcript: transcript as any },
+  });
+
+  return !!chat;
+};
+
+/**
+ * **DATABASE SERVICE**
+ *
+ * Updates a chat's logged events.
+ *
+ * @param {Chat["id"]} id - The ID of the chat to update.
+ * @param {Chat["userId"]} userId - The user ID associated with the chat.
+ * @param {Log[]} loggedEvents - The new logged events.
+ * @returns {Promise<boolean>} True if the update was successful, false otherwise.
+ */
+export const updateChatLoggedEvents = async (
+  id: Chat["id"],
+  userId: Chat["userId"],
+  loggedEvents: LoggedEvent[]
+): Promise<boolean> => {
+  const chat = await prisma.chat.update({
+    where: { id, userId },
+    data: { loggedEvents: loggedEvents as any },
   });
 
   return !!chat;

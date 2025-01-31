@@ -1,4 +1,4 @@
-import { getMdxContent } from "@/lib/mdx";
+import { getMdxContent } from "@/lib/utils/mdx";
 import { notFound } from "next/navigation";
 
 interface PageProps {

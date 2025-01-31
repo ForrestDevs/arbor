@@ -8,7 +8,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Plus, History } from "lucide-react";
+import { Plus, History, Trash2 } from "lucide-react";
 import { Skeleton } from "../ui/skeleton";
 import { Chat } from "@prisma/client";
 
@@ -16,6 +16,8 @@ import { useUserChats } from "@/lib/hooks/queries/chats";
 import { useAi } from "@/app/dashboard/chat/_components/context";
 import { cn } from "@/lib/utils";
 import { usePrivy } from "@privy-io/react-auth";
+import { useAI } from "../ai/context";
+import { deleteChat } from "@/lib/db/services/chats";
 
 export function ChatHistory() {
   const pathname = usePathname();
@@ -25,9 +27,11 @@ export function ChatHistory() {
 
   const { chats, isLoading } = useUserChats();
 
-  const { setChat, chatId, resetChat } = useAi();
+  // const { setChat, chatId, resetChat } = useAi();
 
-  if (!pathname.includes("/dashboard/chat")) {
+  const { setChat, resetChat, chatId, disconnectFromRealtime } = useAI();
+
+  if (!pathname.includes("/dashboard/copilot")) {
     return null;
   }
 
@@ -37,6 +41,7 @@ export function ChatHistory() {
         variant="ghost"
         size="sm"
         onClick={() => {
+          disconnectFromRealtime();
           resetChat();
         }}
       >
@@ -59,14 +64,27 @@ export function ChatHistory() {
               <DropdownMenuItem
                 key={chat.id}
                 onClick={() => {
+                  disconnectFromRealtime();
                   setChat(chat.id);
                 }}
                 className={cn(
-                  "flex items-center justify-between",
+                  "flex items-center justify-between gap-2",
                   chat.id === chatId ? "bg-muted" : ""
                 )}
               >
                 <span className="truncate">{chat.tagLine}</span>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-6 w-6"
+                  onClick={async (e) => {
+                    e.stopPropagation();
+                    // TODO: Add delete chat functionality
+                    await deleteChat(chat.id, user?.id ?? "");
+                  }}
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
               </DropdownMenuItem>
             ))
           ) : user ? (

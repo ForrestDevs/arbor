@@ -8,13 +8,13 @@ import { RenderComponent } from "./render-ai-component";
 import { useAI } from "@/components/ai/context";
 import { CornerDownRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { SwapConfirmationView } from "../blocks";
 
 function Interactions() {
   const { transcriptItems } = useAI();
 
   const interactionsRef = useRef<HTMLDivElement | null>(null);
   const [prevLogs, setPrevLogs] = useState<TranscriptItem[]>([]);
-  
 
   function scrollToBottom() {
     if (interactionsRef.current) {

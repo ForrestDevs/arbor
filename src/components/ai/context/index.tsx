@@ -19,6 +19,16 @@ import {
 } from "@/lib/types/ai";
 import { createRealtimeConnection } from "@/lib/services/realtime";
 import { allAgentSets, defaultAgentSetKey } from "@/lib/agents";
+import ObjectId from "bson-objectid";
+import { usePrivy } from "@privy-io/react-auth";
+import {
+  addChat,
+  getChat,
+  updateChatLoggedEvents,
+  updateChatTranscript,
+} from "@/lib/db/services/chats";
+import { useUserChats } from "@/lib/hooks/queries/chats/use-user-chats";
+import { generateTagLine } from "@/lib/utils/generate-tag";
 
 interface EventContextValue {
   loggedEvents: LoggedEvent[];
@@ -93,6 +103,10 @@ interface ChatContextValue {
 
   currentVolume: number;
   setCurrentVolume: (volume: number) => void;
+
+  chatId: string;
+  setChat: (chatId: string) => void;
+  resetChat: () => void;
 }
 
 interface AIContextValue
@@ -103,6 +117,8 @@ interface AIContextValue
 const AIContext = createContext<AIContextValue | undefined>(undefined);
 
 export const AIProvider: FC<PropsWithChildren> = ({ children }) => {
+  const { user, getAccessToken } = usePrivy();
+  const [chatId, setChatId] = useState<string>(ObjectId().toString());
   const [selectedAgentName, setSelectedAgentName] = useState<string>(
     allAgentSets[defaultAgentSetKey][0].name
   );
@@ -145,6 +161,85 @@ export const AIProvider: FC<PropsWithChildren> = ({ children }) => {
    * While user is speaking, we update that conversation item by ID.
    */
   const ephemeralUserMessageIdRef = useRef<string | null>(null);
+
+  const { mutate } = useUserChats();
+
+  const updateChat = async () => {
+    // console.log("updateChat");
+    // if (!user?.id) return;
+
+    // const chat = await getChat(chatId, user.id);
+
+    // let response;
+
+    // if (!chat) {
+    //   const tagLine = await generateTagLine(transcriptItems);
+
+    //   response = await addChat({
+    //     id: chatId,
+    //     userId: user.id,
+    //     messages: [],
+    //     transcript: transcriptItems as any,
+    //     loggedEvents: loggedEvents as any,
+    //     tagLine: tagLine,
+    //     createdAt: new Date(),
+    //     updatedAt: new Date(),
+    //   });
+    // } else {
+    //   response = await updateChatTranscript(chatId, user.id, transcriptItems);
+    // }
+
+    // if (typeof response === "object" || response === true) {
+    //   mutate();
+    // }
+  };
+
+  const setChat = async (chatId: string) => {
+    setChatId(chatId);
+    if (!user?.id) return;
+    const chat = await getChat(chatId, user.id);
+    if (chat) {
+      setTranscriptItems(chat.transcript as unknown as TranscriptItem[]);
+      setLoggedEvents([]);
+    }
+  };
+
+  const resetChat = () => {
+    setChatId(ObjectId().toString());
+    setLoggedEvents([]);
+    setTranscriptItems([]);
+  };
+
+  const addTranscriptsToHistory = async () => {
+    if (
+      transcriptItems.length > 0 &&
+      dcRef.current &&
+      dcRef.current.readyState === "open"
+    ) {
+      transcriptItems.forEach((item) => {
+        if (item.type === "MESSAGE") {
+          const msg = {
+            type: "conversation.item.create",
+            item: {
+              id: item.itemId,
+              type: "message",
+              role: item.role,
+              content: [
+                {
+                  type: item.role === "user" ? "input_text" : "text",
+                  text: item.title,
+                },
+              ],
+            },
+          };
+
+          if (dcRef.current) {
+            dcRef.current.send(JSON.stringify(msg));
+          }
+        }
+      });
+    }
+  };
 
   function addLoggedEvent(
     direction: "client" | "server",
@@ -251,6 +346,10 @@ export const AIProvider: FC<PropsWithChildren> = ({ children }) => {
               serverEvent.session.id
             }\nStarted at: ${new Date().toLocaleString()}`
           );
+          //saves the chatid to the db or creates new one
+          updateChat();
+          //adds the transcript items to the model history
+          addTranscriptsToHistory();
           // Configure the agent
           configureAgent();
           // Get the agent to introduce itself
@@ -331,11 +430,21 @@ export const AIProvider: FC<PropsWithChildren> = ({ children }) => {
             : serverEvent.transcript;
         if (itemId) {
           updateTranscriptMessage(itemId, finalTranscript, false);
+          updateChat();
         }
         break;
       }
 
       case "response.audio_transcript.delta": {
+        const itemId = serverEvent.item_id;
+        const deltaText = serverEvent.delta || "";
+        if (itemId) {
+          updateTranscriptMessage(itemId, deltaText, true);
+        }
+        break;
+      }
+
+      case "response.text.delta": {
         const itemId = serverEvent.item_id;
         const deltaText = serverEvent.delta || "";
         if (itemId) {
@@ -370,6 +479,7 @@ export const AIProvider: FC<PropsWithChildren> = ({ children }) => {
             }
           });
         }
+        updateChat();
         break;
       }
 
@@ -700,6 +810,7 @@ export const AIProvider: FC<PropsWithChildren> = ({ children }) => {
   };
 
   const disconnectFromRealtime = () => {
+    updateChat();
     if (pcRef.current) {
       pcRef.current.getSenders().forEach((sender) => {
         if (sender.track) {
@@ -974,6 +1085,9 @@ export const AIProvider: FC<PropsWithChildren> = ({ children }) => {
         onToggleConnection,
         currentVolume,
         setCurrentVolume,
+        chatId,
+        setChat,
+        resetChat,
       }}
     >
       {children}

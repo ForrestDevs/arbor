@@ -2,61 +2,69 @@
 
 import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
+import { Portfolio } from "@/lib/services/birdeye";
+import { CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import Image from "next/image";
 
-interface PortfolioViewProps {
-  message: string;
-  // You would typically get more structured data from the API
-  // This is a placeholder for the demo
-  data?: {
-    totalValue: number;
-    gainPercentage: number;
-    holdings: Array<{
-      token: string;
-      percentage: number;
-      value: number;
-    }>;
-  };
-}
+export const PortfolioView: React.FC<Portfolio> = (props) => {
+  const { totalUsd, items } = props;
 
-export const PortfolioView: React.FC<PortfolioViewProps> = ({ message, data }) => {
   return (
     <Card className="w-full">
-      <CardContent className="p-6">
-        <h3 className="text-lg font-semibold mb-4">Portfolio Analysis</h3>
-        
-        {data ? (
-          <div className="space-y-4">
-            <div className="flex justify-between items-center">
-              <span className="text-gray-600">Total Value</span>
-              <span className="font-medium">${data.totalValue.toLocaleString()}</span>
-            </div>
-            
-            <div className="flex justify-between items-center">
-              <span className="text-gray-600">Performance</span>
-              <span className={`font-medium ${data.gainPercentage >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                {data.gainPercentage >= 0 ? '+' : ''}{data.gainPercentage}%
-              </span>
-            </div>
-            
-            <div className="mt-6">
-              <h4 className="text-sm font-medium text-gray-600 mb-3">Holdings</h4>
-              <div className="space-y-2">
-                {data.holdings.map((holding, index) => (
-                  <div key={index} className="flex justify-between items-center">
-                    <div className="flex items-center gap-2">
-                      <span className="font-medium">{holding.token}</span>
-                      <span className="text-sm text-gray-500">{holding.percentage}%</span>
+      <CardHeader>
+        <CardTitle>Portfolio Analysis</CardTitle>
+        <div className="flex justify-between items-center mt-2">
+          <span className="text-gray-600">Total Value</span>
+          <span className="font-medium">
+            ${totalUsd?.toLocaleString() ?? 0}
+          </span>
+        </div>
+      </CardHeader>
+      <CardContent>
+        <div className="rounded-md border">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Token</TableHead>
+                <TableHead>Amount</TableHead>
+                {/* <TableHead>Price</TableHead>
+                <TableHead>Value</TableHead> */}
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {items.map((item) => (
+                <TableRow key={item.address}>
+                  <TableCell>
+                    <div className="flex items-center">
+                      <Image
+                        src={item.logoURI || "/placeholder.svg"}
+                        alt={item.name}
+                        className="w-6 h-6 mr-2 rounded-full"
+                        width={24}
+                        height={24}
+                      />
+                      <span>
+                        {item.name} ({item.symbol})
+                      </span>
                     </div>
-                    <span className="text-sm">${holding.value.toLocaleString()}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        ) : (
-          <div className="text-gray-600">{message}</div>
-        )}
+                  </TableCell>
+                  <TableCell>{item.uiAmount.toLocaleString()}</TableCell>
+                  {/* <TableCell>${item.priceUsd.toFixed(4)}</TableCell>
+                  <TableCell>${item.valueUsd.toLocaleString()}</TableCell> */}
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
       </CardContent>
     </Card>
   );
-}; 
+};

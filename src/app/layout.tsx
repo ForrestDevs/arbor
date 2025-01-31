@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import { JetBrains_Mono, Azeret_Mono, VT323} from "next/font/google";
+import { JetBrains_Mono, Azeret_Mono, VT323 } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import Providers from "@/lib/providers";
@@ -29,7 +29,7 @@ const vt323 = VT323({
   subsets: ["latin"],
   variable: "--font-vt323",
   weight: "400",
-}); 
+});
 
 export const metadata: Metadata = {
   title: "Arbor AI",
@@ -43,6 +43,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <script src="https://terminal.jup.ag/main-v3.js" async></script>
+      </head>
       <body
         className={cn(
           "antialiased",

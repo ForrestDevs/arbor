@@ -10,6 +10,8 @@ generator client {
 model Chat {
   id        String    @id @default(uuid()) @map("_id") @db.ObjectId
   messages  Json[]
+  transcript Json[]
+  loggedEvents Json[]
   tagLine   String
   userId    String    
   createdAt DateTime  @default(now())

@@ -1,20 +1,35 @@
-import { Connection, VersionedTransaction } from "@solana/web3.js";
-import { useSolanaWallets } from "@privy-io/react-auth/solana";
+import {
+  Connection,
+  VersionedTransaction,
+  AddressLookupTableAccount,
+  TransactionMessage,
+} from "@solana/web3.js";
+
+import { usePrivy } from "@privy-io/react-auth";
+
+import {
+  useSolanaWallets,
+  useActiveWallet,
+  useSendSolanaTransaction,
+} from "@privy-io/react-auth";
 
 export const useSendTransaction = () => {
-  const { wallets } = useSolanaWallets();
+  const { user } = usePrivy();
+
+  const wallet = user?.wallet;
+
+  const { sendSolanaTransaction } = useSendSolanaTransaction();
 
   const sendTransaction = async (transaction: VersionedTransaction) => {
-    if (!wallets.length) throw new Error("No wallets found");
+    if (!wallet) throw new Error("No wallets found");
 
-    const connection = new Connection(process.env.NEXT_PUBLIC_SOLANA_RPC_URL!);
+    const connection = new Connection(process.env.RPC_URL!);
 
-    return wallets[0].sendTransaction(transaction, connection, {
-      skipPreflight: true,
-    });
+    return sendSolanaTransaction(transaction, connection);
   };
 
   return {
     sendTransaction,
+    wallet,
   };
 };
